@@ -2,6 +2,7 @@ import { redirect } from "next/navigation"
 import { createSupabaseServerClient } from "@/lib/supabase/server"
 import { LogoutButton } from "@/components/LogoutButton"
 import { TippspielRepository } from "@/repositories/TippspielRepository"
+import { createTippspiel, joinTippspiel } from "@/app/dashboard/actions"
 import Link from "next/link"
 
 export default async function DashboardPage() {
@@ -15,7 +16,7 @@ export default async function DashboardPage() {
     redirect("/login")
   }
 
-  const tippspiele = await TippspielRepository.getAll()
+  const tippspiele = await TippspielRepository.getByUser(user.id)
 
   return (
     <main className="mx-auto max-w-5xl px-6 py-10">
@@ -36,6 +37,37 @@ export default async function DashboardPage() {
         </h2>
 
         <div className="grid gap-4">
+          <section className="mb-10 grid gap-4 md:grid-cols-2">
+  <form action={createTippspiel} className="rounded-xl border border-gray-800 p-5">
+    <h2 className="text-xl font-semibold">Tippspiel erstellen</h2>
+
+    <input
+      name="name"
+      placeholder="Name des Tippspiels"
+      className="mt-4 w-full rounded border px-4 py-2"
+      required
+    />
+
+    <button className="mt-4 rounded bg-black px-4 py-2 font-semibold text-white">
+      Erstellen
+    </button>
+  </form>
+
+  <form action={joinTippspiel} className="rounded-xl border border-gray-800 p-5">
+    <h2 className="text-xl font-semibold">Tippspiel beitreten</h2>
+
+    <input
+      name="inviteCode"
+      placeholder="Invite Code"
+      className="mt-4 w-full rounded border px-4 py-2 uppercase"
+      required
+    />
+
+    <button className="mt-4 rounded bg-black px-4 py-2 font-semibold text-white">
+      Beitreten
+    </button>
+  </form>
+</section>
   {tippspiele.map((tippspiel) => (
     <Link
       href={`/tippspiele/${tippspiel.id}`}
