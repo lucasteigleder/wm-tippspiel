@@ -2,6 +2,7 @@ import Link from "next/link"
 import { redirect } from "next/navigation"
 import { createSupabaseServerClient } from "@/lib/supabase/server"
 import { MatchRepository } from "@/repositories/MatchRepository"
+import { formatMatchDate } from "@/utils/date"
 
 type TippenPageProps = {
   params: Promise<{
@@ -39,7 +40,7 @@ export default async function TippenPage({ params }: TippenPageProps) {
           >
             <p className="text-sm text-gray-400">
               Spieltag {match.matchday} ·{" "}
-              {new Date(match.kickoff_at).toLocaleString("de-DE")}
+            {formatMatchDate(match.kickoff_at)}
             </p>
 
             <div className="mt-3 flex items-center justify-between gap-4">
