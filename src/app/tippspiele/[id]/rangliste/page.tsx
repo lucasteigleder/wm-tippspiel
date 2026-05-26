@@ -4,6 +4,7 @@ import { createSupabaseServerClient } from "@/lib/supabase/server"
 import { MatchRepository } from "@/repositories/MatchRepository"
 import { PredictionRepository } from "@/repositories/PredictionRepository"
 import { LeaderboardService } from "@/services/LeaderboardService"
+import { ProfileRepository } from "@/repositories/ProfileRepository"
 
 type RanglistePageProps = {
   params: Promise<{
@@ -26,9 +27,14 @@ export default async function RanglistePage({ params }: RanglistePageProps) {
   const matches = await MatchRepository.getAll()
   const predictions = await PredictionRepository.getByTippspiel(id)
 
-  const userEmailById = new Map<string, string>([
-    [user.id, user.email ?? "Unbekannt"],
+  const profiles = await ProfileRepository.getAll()
+
+const userEmailById = new Map(
+  profiles.map((profile) => [
+    profile.id,
+    profile.display_name ?? profile.username,
   ])
+)
 
   const leaderboard = LeaderboardService.calculate(
     predictions,
