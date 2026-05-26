@@ -79,6 +79,35 @@ export class TippspielRepository {
       throw new Error(memberError.message)
     }
   }
+
+    static async getMembers(tippspielId: string) {
+  const supabase = await createSupabaseServerClient()
+
+  const { data: members, error: membersError } = await supabase
+    .from("tippspiel_members")
+    .select("user_id, role")
+    .eq("tippspiel_id", tippspielId)
+
+  if (membersError) {
+    throw new Error(membersError.message)
+  }
+
+  const userIds = members.map((member) => member.user_id)
+
+  const { data: profiles, error: profilesError } = await supabase
+    .from("profiles")
+    .select("id, username, display_name")
+    .in("id", userIds)
+
+  if (profilesError) {
+    throw new Error(profilesError.message)
+  }
+
+  return members.map((member) => ({
+    ...member,
+    profile: profiles.find((profile) => profile.id === member.user_id),
+  }))
+}
 }
 
 function createInviteCode() {

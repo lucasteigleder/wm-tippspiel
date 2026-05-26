@@ -1,6 +1,8 @@
 import Link from "next/link"
 import { redirect } from "next/navigation"
 import { createSupabaseServerClient } from "@/lib/supabase/server"
+import { TippspielRepository } from "@/repositories/TippspielRepository"
+import { CopyInviteButton } from "@/components/CopyInviteButton"
 
 type TippspielPageProps = {
   params: Promise<{
@@ -29,6 +31,8 @@ export default async function TippspielPage({ params }: TippspielPageProps) {
   if (error || !tippspiel) {
     redirect("/dashboard")
   }
+
+  const members = await TippspielRepository.getMembers(id)
 
   return (
     <main className="mx-auto max-w-5xl px-6 py-10">
@@ -73,6 +77,40 @@ export default async function TippspielPage({ params }: TippspielPageProps) {
             Punktevergabe und Spielregeln.
           </p>
         </Link>
+      </section>
+
+      <section className="mt-10">
+        <div className="flex items-center justify-between gap-4">
+          <h2 className="text-2xl font-semibold">Mitglieder</h2>
+          <CopyInviteButton inviteCode={tippspiel.invite_code} />
+        </div>
+
+        <div className="mt-4 grid gap-3">
+          {members.map((member, index) => {
+            const profile = member.profile
+
+            return (
+              <div
+                key={index}
+                className="flex items-center justify-between rounded-xl border border-gray-800 p-4"
+              >
+                <div>
+                  <p className="font-semibold">
+                    {profile?.display_name ?? profile?.username ?? "Unbekannt"}
+                  </p>
+
+                  <p className="text-sm text-gray-400">
+                    @{profile?.username ?? "unbekannt"}
+                  </p>
+                </div>
+
+                <span className="rounded bg-gray-800 px-3 py-1 text-sm">
+                  {member.role}
+                </span>
+              </div>
+            )
+          })}
+        </div>
       </section>
     </main>
   )
