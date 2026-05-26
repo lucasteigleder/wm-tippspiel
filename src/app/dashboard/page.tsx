@@ -2,6 +2,7 @@ import { redirect } from "next/navigation"
 import { createSupabaseServerClient } from "@/lib/supabase/server"
 import { LogoutButton } from "@/components/LogoutButton"
 import { TippspielRepository } from "@/repositories/TippspielRepository"
+import Link from "next/link"
 
 export default async function DashboardPage() {
   const supabase = await createSupabaseServerClient()
@@ -35,21 +36,22 @@ export default async function DashboardPage() {
         </h2>
 
         <div className="grid gap-4">
-          {tippspiele.map((tippspiel) => (
-            <div
-              key={tippspiel.id}
-              className="rounded-xl border border-gray-800 p-5"
-            >
-              <h3 className="text-xl font-semibold">
-                {tippspiel.name}
-              </h3>
+  {tippspiele.map((tippspiel) => (
+    <Link
+      href={`/tippspiele/${tippspiel.id}`}
+      key={tippspiel.id}
+      className="rounded-xl border border-gray-800 p-5 transition hover:border-gray-500"
+    >
+      <h3 className="text-xl font-semibold">
+        {tippspiel.name}
+      </h3>
 
-              <p className="mt-2 text-sm text-gray-400">
-                Invite Code: {tippspiel.invite_code}
-              </p>
-            </div>
-          ))}
-        </div>
+      <p className="mt-2 text-sm text-gray-400">
+        Invite Code: {tippspiel.invite_code}
+      </p>
+    </Link>
+  ))}
+</div>
       </section>
     </main>
   )
