@@ -3,6 +3,7 @@ import { redirect } from "next/navigation"
 import { createSupabaseServerClient } from "@/lib/supabase/server"
 import { MatchRepository } from "@/repositories/MatchRepository"
 import { formatMatchDate } from "@/utils/date"
+import { PredictionForm } from "@/components/PredictionForm"
 
 type TippenPageProps = {
   params: Promise<{
@@ -48,6 +49,11 @@ export default async function TippenPage({ params }: TippenPageProps) {
               <span className="text-gray-400">vs.</span>
               <span className="font-semibold">{match.away_team}</span>
             </div>
+            <PredictionForm
+              tippspielId={id}
+              matchId={match.id}
+              userId={user.id}
+            />
           </div>
         ))}
       </div>
