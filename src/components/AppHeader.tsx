@@ -13,6 +13,9 @@ export function AppHeader() {
           <Link href="/dashboard" className="text-sm text-gray-400">
             Dashboard
           </Link>
+          <Link href="/profile" className="text-sm text gray-400">
+            Profil
+          </Link>
 
           <LogoutButton />
         </nav>
