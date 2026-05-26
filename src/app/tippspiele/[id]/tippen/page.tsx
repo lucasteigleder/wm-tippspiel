@@ -4,6 +4,7 @@ import { createSupabaseServerClient } from "@/lib/supabase/server"
 import { MatchRepository } from "@/repositories/MatchRepository"
 import { formatMatchDate } from "@/utils/date"
 import { PredictionForm } from "@/components/PredictionForm"
+import { PredictionRepository } from "@/repositories/PredictionRepository"
 
 type TippenPageProps = {
   params: Promise<{
@@ -24,6 +25,14 @@ export default async function TippenPage({ params }: TippenPageProps) {
   }
 
   const matches = await MatchRepository.getAll()
+  const predictions = await PredictionRepository.getByTippspielAndUser(
+  id,
+  user.id
+)
+
+const predictionByMatchId = new Map(
+  predictions.map((prediction) => [prediction.match_id, prediction])
+)
 
   return (
     <main className="mx-auto max-w-5xl px-6 py-10">
@@ -50,10 +59,16 @@ export default async function TippenPage({ params }: TippenPageProps) {
               <span className="font-semibold">{match.away_team}</span>
             </div>
             <PredictionForm
-              tippspielId={id}
-              matchId={match.id}
-              userId={user.id}
-            />
+  tippspielId={id}
+  matchId={match.id}
+  userId={user.id}
+  initialHomeScore={
+    predictionByMatchId.get(match.id)?.predicted_home_score
+  }
+  initialAwayScore={
+    predictionByMatchId.get(match.id)?.predicted_away_score
+  }
+/>
           </div>
         ))}
       </div>

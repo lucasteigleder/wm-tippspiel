@@ -7,15 +7,23 @@ type PredictionFormProps = {
   tippspielId: string
   matchId: string
   userId: string
+  initialHomeScore?: number
+  initialAwayScore?: number
 }
 
 export function PredictionForm({
   tippspielId,
   matchId,
   userId,
+  initialHomeScore,
+  initialAwayScore,
 }: PredictionFormProps) {
-  const [homeScore, setHomeScore] = useState("")
-  const [awayScore, setAwayScore] = useState("")
+  const [homeScore, setHomeScore] = useState(
+    initialHomeScore?.toString() ?? ""
+  )
+  const [awayScore, setAwayScore] = useState(
+    initialAwayScore?.toString() ?? ""
+  )
   const [message, setMessage] = useState("")
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
