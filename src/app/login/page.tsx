@@ -1,22 +1,25 @@
 "use client"
 
 import { useState } from "react"
+import { useRouter } from "next/navigation"
 import { createSupabaseBrowserClient } from "@/lib/supabase/client"
 
 export default function LoginPage() {
+  const router = useRouter()
+
   const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
   const [message, setMessage] = useState("")
 
   async function handleLogin(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
+    setMessage("")
 
     const supabase = createSupabaseBrowserClient()
 
-    const { error } = await supabase.auth.signInWithOtp({
+    const { error } = await supabase.auth.signInWithPassword({
       email,
-      options: {
-        emailRedirectTo: `${window.location.origin}/dashboard`,
-      },
+      password,
     })
 
     if (error) {
@@ -24,7 +27,28 @@ export default function LoginPage() {
       return
     }
 
-    setMessage("Check deine E-Mails für den Login-Link.")
+    router.push("/dashboard")
+    router.refresh()
+  }
+
+  async function handleRegister() {
+    setMessage("")
+
+    const supabase = createSupabaseBrowserClient()
+
+    const { error } = await supabase.auth.signUp({
+      email,
+      password,
+    })
+
+    if (error) {
+      setMessage(error.message)
+      return
+    }
+
+    setMessage("Account erstellt. Du bist jetzt eingeloggt.")
+    router.push("/dashboard")
+    router.refresh()
   }
 
   return (
@@ -41,13 +65,30 @@ export default function LoginPage() {
           required
         />
 
+        <input
+          type="password"
+          placeholder="Passwort"
+          value={password}
+          onChange={(event) => setPassword(event.target.value)}
+          className="w-full rounded border px-4 py-2"
+          required
+          minLength={6}
+        />
+
         <button
           type="submit"
           className="w-full rounded bg-black px-4 py-2 font-semibold text-white"
         >
-          Login-Link senden
+          Einloggen
         </button>
       </form>
+
+      <button
+        onClick={handleRegister}
+        className="mt-3 w-full rounded border px-4 py-2 font-semibold"
+      >
+        Account erstellen
+      </button>
 
       {message && <p className="mt-4 text-sm">{message}</p>}
     </main>
