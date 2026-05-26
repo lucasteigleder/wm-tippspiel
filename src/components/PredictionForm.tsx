@@ -7,6 +7,7 @@ type PredictionFormProps = {
   tippspielId: string
   matchId: string
   userId: string
+  kickoffAt: string
   initialHomeScore?: number
   initialAwayScore?: number
 }
@@ -15,9 +16,12 @@ export function PredictionForm({
   tippspielId,
   matchId,
   userId,
+  kickoffAt,
   initialHomeScore,
   initialAwayScore,
 }: PredictionFormProps) {
+  const isLocked = new Date(kickoffAt).getTime() <= Date.now()
+
   const [homeScore, setHomeScore] = useState(
     initialHomeScore?.toString() ?? ""
   )
@@ -29,6 +33,11 @@ export function PredictionForm({
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
     setMessage("")
+
+    if (isLocked) {
+      setMessage("Tippabgabe ist geschlossen.")
+      return
+    }
 
     const supabase = createSupabaseBrowserClient()
 
@@ -63,6 +72,7 @@ export function PredictionForm({
         onChange={(event) => setHomeScore(event.target.value)}
         className="w-16 rounded border px-2 py-1 text-center"
         required
+        disabled={isLocked}
       />
 
       <span>:</span>
@@ -74,13 +84,15 @@ export function PredictionForm({
         onChange={(event) => setAwayScore(event.target.value)}
         className="w-16 rounded border px-2 py-1 text-center"
         required
+        disabled={isLocked}
       />
 
       <button
         type="submit"
-        className="rounded bg-black px-4 py-1 font-semibold text-white"
+        disabled={isLocked}
+        className="rounded bg-black px-4 py-1 font-semibold text-white disabled:cursor-not-allowed disabled:opacity-50"
       >
-        Speichern
+        {isLocked ? "Gesperrt" : "Speichern"}
       </button>
 
       {message && <span className="text-sm text-gray-400">{message}</span>}

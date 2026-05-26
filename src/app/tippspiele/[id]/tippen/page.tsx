@@ -68,6 +68,7 @@ const predictionByMatchId = new Map(
   initialAwayScore={
     predictionByMatchId.get(match.id)?.predicted_away_score
   }
+  kickoffAt={match.kickoff_at}
 />
           </div>
         ))}
