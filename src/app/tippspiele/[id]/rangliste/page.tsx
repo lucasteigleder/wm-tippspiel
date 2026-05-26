@@ -3,13 +3,30 @@ import { redirect } from "next/navigation"
 import { createSupabaseServerClient } from "@/lib/supabase/server"
 import { MatchRepository } from "@/repositories/MatchRepository"
 import { PredictionRepository } from "@/repositories/PredictionRepository"
-import { LeaderboardService } from "@/services/LeaderboardService"
+import { LeaderboardService, LeaderboardEntry } from "@/services/LeaderboardService"
 import { ProfileRepository } from "@/repositories/ProfileRepository"
 
 type RanglistePageProps = {
   params: Promise<{
     id: string
   }>
+}
+
+function getPlacement(leaderboard: LeaderboardEntry[], index: number) {
+  if (index === 0) return 1
+
+  const current = leaderboard[index]
+  const previous = leaderboard[index - 1]
+
+  if (
+    current.points === previous.points &&
+    current.exactResults === previous.exactResults &&
+    current.correctTendencies === previous.correctTendencies
+  ) {
+    return getPlacement(leaderboard, index - 1)
+  }
+
+  return index + 1
 }
 
 export default async function RanglistePage({ params }: RanglistePageProps) {
@@ -26,20 +43,19 @@ export default async function RanglistePage({ params }: RanglistePageProps) {
 
   const matches = await MatchRepository.getAll()
   const predictions = await PredictionRepository.getByTippspiel(id)
-
   const profiles = await ProfileRepository.getAll()
 
-const userEmailById = new Map(
-  profiles.map((profile) => [
-    profile.id,
-    profile.display_name ?? profile.username,
-  ])
-)
+  const userNameById = new Map(
+    profiles.map((profile) => [
+      profile.id,
+      profile.display_name ?? profile.username,
+    ])
+  )
 
   const leaderboard = LeaderboardService.calculate(
     predictions,
     matches,
-    userEmailById
+    userNameById
   )
 
   return (
@@ -57,26 +73,33 @@ const userEmailById = new Map(
               <th className="px-4 py-3 text-left">Platz</th>
               <th className="px-4 py-3 text-left">Spieler</th>
               <th className="px-4 py-3 text-right">Punkte</th>
+              <th className="px-4 py-3 text-right">Exakt</th>
+              <th className="px-4 py-3 text-right">Tendenz</th>
             </tr>
           </thead>
 
           <tbody>
             {leaderboard.map((entry, index) => (
               <tr key={entry.userId} className="border-b border-gray-900">
-                <td className="px-4 py-3">{index + 1}</td>
-                <td className="px-4 py-3">{entry.email}</td>
+                <td className="px-4 py-3">
+                  {getPlacement(leaderboard, index)}
+                </td>
+                <td className="px-4 py-3">{entry.name}</td>
                 <td className="px-4 py-3 text-right font-bold">
                   {entry.points}
+                </td>
+                <td className="px-4 py-3 text-right">
+                  {entry.exactResults}
+                </td>
+                <td className="px-4 py-3 text-right">
+                  {entry.correctTendencies}
                 </td>
               </tr>
             ))}
 
             {leaderboard.length === 0 && (
               <tr>
-                <td
-                  colSpan={3}
-                  className="px-4 py-8 text-center text-gray-400"
-                >
+                <td colSpan={5} className="px-4 py-8 text-center text-gray-400">
                   Noch keine Punkte vorhanden.
                 </td>
               </tr>
