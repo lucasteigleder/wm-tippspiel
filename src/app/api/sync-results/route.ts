@@ -4,8 +4,13 @@ import { FootballApiService } from "@/services/FootballApiService"
 
 export async function POST(request: Request) {
   const secret = request.headers.get("x-sync-secret")
+const cronSecret = request.headers.get("authorization")
+const expectedCronSecret = `Bearer ${process.env.CRON_SECRET}`
 
-  if (secret !== process.env.SYNC_SECRET) {
+if (
+  secret !== process.env.SYNC_SECRET &&
+  cronSecret !== expectedCronSecret
+) {
     return NextResponse.json(
       {
         success: false,
