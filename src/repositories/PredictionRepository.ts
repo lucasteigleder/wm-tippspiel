@@ -20,4 +20,18 @@ export class PredictionRepository {
 
     return data as Prediction[]
   }
+    static async getByTippspiel(tippspielId: string): Promise<Prediction[]> {
+    const supabase = await createSupabaseServerClient()
+
+    const { data, error } = await supabase
+      .from("predictions")
+      .select("*")
+      .eq("tippspiel_id", tippspielId)
+
+    if (error) {
+      throw new Error(error.message)
+    }
+
+    return data as Prediction[]
+  }
 }
