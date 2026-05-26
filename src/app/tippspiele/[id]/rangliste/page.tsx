@@ -5,6 +5,7 @@ import { MatchRepository } from "@/repositories/MatchRepository"
 import { PredictionRepository } from "@/repositories/PredictionRepository"
 import { LeaderboardService, LeaderboardEntry } from "@/services/LeaderboardService"
 import { ProfileRepository } from "@/repositories/ProfileRepository"
+import { AppHeader } from "@/components/AppHeader"
 
 type RanglistePageProps = {
   params: Promise<{
@@ -60,6 +61,7 @@ export default async function RanglistePage({ params }: RanglistePageProps) {
 
   return (
     <main className="mx-auto max-w-5xl px-6 py-10">
+      <AppHeader />
       <Link href={`/tippspiele/${id}`} className="text-sm text-gray-400">
         ← Zurück zum Tippspiel
       </Link>

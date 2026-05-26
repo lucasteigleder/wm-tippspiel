@@ -5,6 +5,7 @@ import { MatchRepository } from "@/repositories/MatchRepository"
 import { PredictionRepository } from "@/repositories/PredictionRepository"
 import { PredictionForm } from "@/components/PredictionForm"
 import { formatMatchDate } from "@/utils/date"
+import { AppHeader } from "@/components/AppHeader"
 
 type TippenPageProps = {
   params: Promise<{
@@ -41,6 +42,7 @@ export default async function TippenPage({ params }: TippenPageProps) {
 
   return (
     <main className="mx-auto max-w-5xl px-6 py-10">
+      <AppHeader />
       <Link href={`/tippspiele/${id}`} className="text-sm text-gray-400">
         ← Zurück zum Tippspiel
       </Link>

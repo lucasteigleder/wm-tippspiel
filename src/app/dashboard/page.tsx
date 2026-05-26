@@ -3,6 +3,7 @@ import { createSupabaseServerClient } from "@/lib/supabase/server"
 import { LogoutButton } from "@/components/LogoutButton"
 import { TippspielRepository } from "@/repositories/TippspielRepository"
 import { createTippspiel, joinTippspiel } from "@/app/dashboard/actions"
+import { AppHeader } from "@/components/AppHeader"
 import Link from "next/link"
 
 export default async function DashboardPage() {
@@ -20,6 +21,7 @@ export default async function DashboardPage() {
 
   return (
     <main className="mx-auto max-w-5xl px-6 py-10">
+      <AppHeader />
       <div className="mb-10 flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold">Dashboard</h1>
@@ -27,8 +29,6 @@ export default async function DashboardPage() {
             Eingeloggt als {user.email}
           </p>
         </div>
-
-        <LogoutButton />
       </div>
 
       <section>

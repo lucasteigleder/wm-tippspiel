@@ -1,4 +1,5 @@
 import Link from "next/link"
+import { AppHeader } from "@/components/AppHeader"
 
 type RegelnPageProps = {
   params: Promise<{
@@ -11,6 +12,7 @@ export default async function RegelnPage({ params }: RegelnPageProps) {
 
   return (
     <main className="mx-auto max-w-3xl px-6 py-10">
+      <AppHeader />
       <Link href={`/tippspiele/${id}`} className="text-sm text-gray-400">
         ← Zurück zum Tippspiel
       </Link>
