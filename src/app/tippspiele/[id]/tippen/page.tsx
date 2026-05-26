@@ -61,7 +61,6 @@ const predictionByMatchId = new Map(
             <PredictionForm
   tippspielId={id}
   matchId={match.id}
-  userId={user.id}
   initialHomeScore={
     predictionByMatchId.get(match.id)?.predicted_home_score
   }
