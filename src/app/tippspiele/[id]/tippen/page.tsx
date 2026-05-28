@@ -7,6 +7,7 @@ import { AppShell } from "@/components/AppShell"
 import { MatchPredictionCard } from "@/components/MatchPredictionCard"
 import { StageAccordion } from "@/components/StageAccordion"
 import { getNextMatch } from "@/utils/matchStatus"
+import { formatStageName } from "@/utils/stage"
 
 type TippenPageProps = {
   params: Promise<{
@@ -54,7 +55,7 @@ export default async function TippenPage({ params }: TippenPageProps) {
         {Array.from(matchesByStage.entries()).map(([stage, matches], index) => (
           <StageAccordion
   key={stage}
-  title={stage}
+  title={formatStageName(stage)}
   defaultOpen={index === 0}
 >
   <div className="grid gap-4">
