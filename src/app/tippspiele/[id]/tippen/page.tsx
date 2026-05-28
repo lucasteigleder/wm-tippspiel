@@ -6,6 +6,7 @@ import { PredictionRepository } from "@/repositories/PredictionRepository"
 import { AppShell } from "@/components/AppShell"
 import { MatchPredictionCard } from "@/components/MatchPredictionCard"
 import { StageAccordion } from "@/components/StageAccordion"
+import { getNextMatch } from "@/utils/matchStatus"
 
 type TippenPageProps = {
   params: Promise<{
@@ -26,6 +27,7 @@ export default async function TippenPage({ params }: TippenPageProps) {
   }
 
   const matches = await MatchRepository.getAll()
+  const nextMatch = getNextMatch(matches)
   const predictions = await PredictionRepository.getByTippspielAndUser(
     id,
     user.id
@@ -62,6 +64,7 @@ export default async function TippenPage({ params }: TippenPageProps) {
         match={match}
         tippspielId={id}
         prediction={predictionByMatchId.get(match.id)}
+        isNextMatch={nextMatch?.id === match.id}
       />
     ))}
   </div>

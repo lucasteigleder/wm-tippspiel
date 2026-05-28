@@ -3,17 +3,20 @@ import { Prediction } from "@/models/Prediction"
 import { PredictionForm } from "@/components/PredictionForm"
 import { TeamLogo } from "@/components/TeamLogo"
 import { formatMatchDate } from "@/utils/date"
+import { getCountdownText } from "@/utils/matchStatus"
 
 type MatchPredictionCardProps = {
   match: Match
   tippspielId: string
   prediction?: Prediction
+  isNextMatch?: boolean
 }
 
 export function MatchPredictionCard({
   match,
   tippspielId,
   prediction,
+  isNextMatch = false,
 }: MatchPredictionCardProps) {
   const hasResult = match.home_score !== null && match.away_score !== null
 
@@ -23,6 +26,12 @@ export function MatchPredictionCard({
         <p className="text-sm text-zinc-400">
           {formatMatchDate(match.kickoff_at)}
         </p>
+
+        {isNextMatch && (
+  <span className="rounded-full bg-blue-500/10 px-3 py-1 text-xs font-semibold text-blue-400">
+    Nächstes Spiel · {getCountdownText(match.kickoff_at)}
+  </span>
+)}
 
         {hasResult && (
           <span className="rounded-full bg-emerald-500/10 px-3 py-1 text-xs font-semibold text-emerald-400">
