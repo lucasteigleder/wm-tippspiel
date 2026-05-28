@@ -9,6 +9,9 @@ type PredictionFormProps = {
   kickoffAt: string
   initialHomeScore?: number
   initialAwayScore?: number
+  homeSlot: React.ReactNode
+  awaySlot: React.ReactNode
+  resultSlot: React.ReactNode
 }
 
 export function PredictionForm({
@@ -17,9 +20,11 @@ export function PredictionForm({
   kickoffAt,
   initialHomeScore,
   initialAwayScore,
+  homeSlot,
+  awaySlot,
+  resultSlot,
 }: PredictionFormProps) {
   const isLocked = new Date(kickoffAt).getTime() <= Date.now()
-
   const [message, setMessage] = useState("")
 
   async function handleSubmit(formData: FormData) {
@@ -34,41 +39,57 @@ export function PredictionForm({
   }
 
   return (
-    <form action={handleSubmit} className="mt-4 flex items-center gap-2">
-      <input type="hidden" name="tippspielId" value={tippspielId} />
-      <input type="hidden" name="matchId" value={matchId} />
+  <form action={handleSubmit}>
+    <input type="hidden" name="tippspielId" value={tippspielId} />
+    <input type="hidden" name="matchId" value={matchId} />
 
-      <input
-        name="homeScore"
-        type="number"
-        min="0"
-        defaultValue={initialHomeScore ?? ""}
-        className="w-16 rounded border px-2 py-1 text-center"
-        required
-        disabled={isLocked}
-      />
+    <div className="mt-6 grid grid-cols-[1fr_56px_1fr] items-start gap-3">
+      <div className="flex min-w-0 flex-col items-center gap-3 text-center">
+        {homeSlot}
 
-      <span>:</span>
+        <input
+          name="homeScore"
+          type="number"
+          min="0"
+          defaultValue={initialHomeScore ?? ""}
+          className="h-11 w-full max-w-24 rounded-xl border border-zinc-500 bg-zinc-950/60 text-center text-lg font-bold outline-none focus:border-white"
+          required
+          disabled={isLocked}
+        />
+      </div>
 
-      <input
-        name="awayScore"
-        type="number"
-        min="0"
-        defaultValue={initialAwayScore ?? ""}
-        className="w-16 rounded border px-2 py-1 text-center"
-        required
-        disabled={isLocked}
-      />
+      <div className="flex flex-col items-center pt-10">
+        {resultSlot}
+      </div>
 
+      <div className="flex min-w-0 flex-col items-center gap-3 text-center">
+        {awaySlot}
+
+        <input
+          name="awayScore"
+          type="number"
+          min="0"
+          defaultValue={initialAwayScore ?? ""}
+          className="h-11 w-full max-w-24 rounded-xl border border-zinc-500 bg-zinc-950/60 text-center text-lg font-bold outline-none focus:border-white"
+          required
+          disabled={isLocked}
+        />
+      </div>
+    </div>
+
+    <div className="mt-5 flex justify-center">
       <button
         type="submit"
         disabled={isLocked}
-        className="rounded bg-black px-4 py-1 font-semibold text-white disabled:cursor-not-allowed disabled:opacity-50"
+        className="rounded-xl bg-black px-6 py-3 text-sm font-bold text-white transition hover:bg-zinc-900 disabled:cursor-not-allowed disabled:opacity-50"
       >
         {isLocked ? "Gesperrt" : "Speichern"}
       </button>
+    </div>
 
-      {message && <span className="text-sm text-gray-400">{message}</span>}
-    </form>
-  )
+    {message && (
+      <p className="mt-4 text-center text-sm text-zinc-400">{message}</p>
+    )}
+  </form>
+)
 }
