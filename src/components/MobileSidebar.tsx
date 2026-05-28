@@ -13,6 +13,7 @@ import {
   PlusCircle,
   LogIn,
   User,
+  Table2,
 } from "lucide-react"
 
 type MobileSidebarProps = {
@@ -117,6 +118,13 @@ export function MobileSidebar({
                     href={`/tippspiele/${tippspielId}/regeln`}
                     icon={<BookOpen size={18} />}
                     label="Regeln"
+                    onClick={() => setOpen(false)}
+                  />
+
+                  <MobileNavItem
+                    href={`/tippspiele/${tippspielId}/gruppen`}
+                    icon={<Table2 size={18} />}
+                    label="Gruppen"
                     onClick={() => setOpen(false)}
                   />
                 </>

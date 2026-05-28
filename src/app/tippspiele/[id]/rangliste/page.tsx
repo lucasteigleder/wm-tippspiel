@@ -8,6 +8,7 @@ import { ProfileRepository } from "@/repositories/ProfileRepository"
 import { AppShell } from "@/components/AppShell"
 import { MatchPointsService } from "@/services/MatchPointsService"
 import { formatMatchDate } from "@/utils/date"
+import { TeamLogo } from "@/components/TeamLogo"
 
 type RanglistePageProps = {
   params: Promise<{
@@ -129,17 +130,23 @@ export default async function RanglistePage({ params }: RanglistePageProps) {
           {formatMatchDate(match.kickoff_at)}
         </p>
 
-        <div className="mt-3 flex items-center justify-between gap-4">
-          <span className="font-bold">{match.home_team}</span>
+        <div className="mt-4 grid grid-cols-[1fr_auto_1fr] items-center gap-4">
+  <div className="flex items-center gap-3">
+    <TeamLogo src={match.home_team_logo} alt={match.home_team} />
+    <span className="font-bold">{match.home_team}</span>
+  </div>
 
-          <span className="rounded-xl bg-zinc-950 px-4 py-2 font-black">
-            {match.home_score !== null && match.away_score !== null
-              ? `${match.home_score} : ${match.away_score}`
-              : "Noch offen"}
-          </span>
+  <span className="rounded-xl bg-zinc-950 px-4 py-2 text-center font-black">
+    {match.home_score !== null && match.away_score !== null
+      ? `${match.home_score} : ${match.away_score}`
+      : "offen"}
+  </span>
 
-          <span className="font-bold">{match.away_team}</span>
-        </div>
+  <div className="flex items-center justify-end gap-3 text-right">
+    <span className="font-bold">{match.away_team}</span>
+    <TeamLogo src={match.away_team_logo} alt={match.away_team} />
+  </div>
+</div>
 
         <div className="mt-5 divide-y divide-zinc-800">
           {entries.map((entry) => (

@@ -27,6 +27,31 @@ export type ApiFootballFixture = {
   }
 }
 
+export type ApiFootballStandingTeam = {
+  rank: number
+  group: string
+  team: {
+    id: number
+    name: string
+    logo: string
+  }
+  points: number
+  goalsDiff: number
+  all: {
+    played: number
+  }
+}
+
+type ApiFootballStandingsResponse = {
+  response: {
+    league: {
+      id: number
+      season: number
+      standings: ApiFootballStandingTeam[][]
+    }
+  }[]
+}
+
 type ApiFootballResponse = {
   response: ApiFootballFixture[]
 }
@@ -61,4 +86,34 @@ export class FootballApiService {
 
     return json.response
   }
+
+  static async getWorldCupStandings(): Promise<ApiFootballStandingTeam[][]> {
+  const apiKey = process.env.FOOTBALL_API_KEY
+  const apiHost = process.env.FOOTBALL_API_HOST
+  const leagueId = process.env.FOOTBALL_WORLD_CUP_LEAGUE_ID
+  const season = process.env.FOOTBALL_WORLD_CUP_SEASON
+
+  if (!apiKey || !apiHost || !leagueId || !season) {
+    throw new Error("Football API environment variables are missing")
+  }
+
+  const url = new URL(`https://${apiHost}/standings`)
+  url.searchParams.set("league", leagueId)
+  url.searchParams.set("season", season)
+
+  const response = await fetch(url.toString(), {
+    headers: {
+      "x-apisports-key": apiKey,
+    },
+    cache: "no-store",
+  })
+
+  if (!response.ok) {
+    throw new Error(`Football API standings error: ${response.status}`)
+  }
+
+  const json = (await response.json()) as ApiFootballStandingsResponse
+
+  return json.response[0]?.league.standings ?? []
+}
 }

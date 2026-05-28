@@ -8,6 +8,7 @@ import {
   PlusCircle,
   LogIn,
   User,
+  Table2,
 } from "lucide-react"
 import { LogoutButton } from "@/components/LogoutButton"
 import { MobileSidebar } from "@/components/MobileSidebar"
@@ -88,6 +89,12 @@ export function AppShell({
                 href={`/tippspiele/${tippspielId}/regeln`}
                 icon={<BookOpen size={18} />}
                 label="Regeln"
+              />
+
+              <NavItem
+                href={`/tippspiele/${tippspielId}/gruppen`}
+                icon={<Table2 size={18} />}
+                label="Gruppen"
               />
             </div>
           )}
