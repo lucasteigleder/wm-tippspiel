@@ -5,6 +5,7 @@ import { MatchRepository } from "@/repositories/MatchRepository"
 import { PredictionRepository } from "@/repositories/PredictionRepository"
 import { AppShell } from "@/components/AppShell"
 import { MatchPredictionCard } from "@/components/MatchPredictionCard"
+import { StageAccordion } from "@/components/StageAccordion"
 
 type TippenPageProps = {
   params: Promise<{
@@ -48,21 +49,23 @@ export default async function TippenPage({ params }: TippenPageProps) {
       <h1 className="mt-8 text-4xl font-bold">Tippen</h1>
 
       <div className="mt-8 space-y-10">
-        {Array.from(matchesByStage.entries()).map(([stage, matches]) => (
-          <section key={stage}>
-            <h2 className="mb-4 text-2xl font-semibold">{stage}</h2>
-
-            <div className="grid gap-4">
-              {matches.map((match) => (
-                <MatchPredictionCard
-                  key={match.id}
-                  match={match}
-                  tippspielId={id}
-                  prediction={predictionByMatchId.get(match.id)}
-                />
-              ))}
-            </div>
-          </section>
+        {Array.from(matchesByStage.entries()).map(([stage, matches], index) => (
+          <StageAccordion
+  key={stage}
+  title={stage}
+  defaultOpen={index === 0}
+>
+  <div className="grid gap-4">
+    {matches.map((match) => (
+      <MatchPredictionCard
+        key={match.id}
+        match={match}
+        tippspielId={id}
+        prediction={predictionByMatchId.get(match.id)}
+      />
+    ))}
+  </div>
+</StageAccordion>
         ))}
       </div>
     </AppShell>
