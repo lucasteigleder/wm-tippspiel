@@ -1,4 +1,4 @@
-type ApiFootballFixture = {
+export type ApiFootballFixture = {
   fixture: {
     id: number
     date: string
@@ -11,10 +11,14 @@ type ApiFootballFixture = {
   }
   teams: {
     home: {
+      id: number
       name: string
+      logo: string
     }
     away: {
+      id: number
       name: string
+      logo: string
     }
   }
   goals: {
