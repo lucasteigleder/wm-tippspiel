@@ -51,7 +51,7 @@ export class TippspielRepository {
     inviteCode: string,
     userId: string
   ): Promise<void> {
-    const supabase = await createSupabaseServerClient()
+    const supabase = createSupabaseAdminClient()
 
     const { data: tippspiel, error } = await supabase
       .from("tippspiele")
@@ -82,7 +82,7 @@ export class TippspielRepository {
   }
 
     static async getMembers(tippspielId: string) {
-  const supabase = await createSupabaseServerClient()
+  const supabase = createSupabaseAdminClient()
 
   const { data: members, error: membersError } = await supabase
     .from("tippspiel_members")
