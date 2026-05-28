@@ -3,7 +3,7 @@ import { redirect } from "next/navigation"
 import { createSupabaseServerClient } from "@/lib/supabase/server"
 import { TippspielRepository } from "@/repositories/TippspielRepository"
 import { CopyInviteButton } from "@/components/CopyInviteButton"
-import { AppHeader } from "@/components/AppHeader"
+import { AppShell } from "@/components/AppShell"
 
 type TippspielPageProps = {
   params: Promise<{
@@ -36,8 +36,9 @@ export default async function TippspielPage({ params }: TippspielPageProps) {
   const members = await TippspielRepository.getMembers(id)
 
   return (
-    <main className="mx-auto max-w-5xl px-6 py-10">
-      <AppHeader />
+    <AppShell      tippspielId={tippspiel.id}
+      tippspielName={tippspiel.name}
+    >
       <Link href="/dashboard" className="text-sm text-gray-400">
         ← Zurück zum Dashboard
       </Link>
@@ -114,6 +115,6 @@ export default async function TippspielPage({ params }: TippspielPageProps) {
           })}
         </div>
       </section>
-    </main>
+    </AppShell>
   )
 }

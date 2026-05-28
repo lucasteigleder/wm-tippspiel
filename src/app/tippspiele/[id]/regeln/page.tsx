@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { AppHeader } from "@/components/AppHeader"
+import { AppShell } from "@/components/AppShell"
 
 type RegelnPageProps = {
   params: Promise<{
@@ -11,9 +11,8 @@ export default async function RegelnPage({ params }: RegelnPageProps) {
   const { id } = await params
 
   return (
-    <main className="mx-auto max-w-3xl px-6 py-10">
-      <AppHeader />
-      <Link href={`/tippspiele/${id}`} className="text-sm text-gray-400">
+    <AppShell tippspielId={id} tippspielName="WM 2026 Tippspiel">
+      <Link href={`/tippspiele/${id}`} className="text-sm text-zinc-400">
         ← Zurück zum Tippspiel
       </Link>
 
@@ -40,6 +39,6 @@ export default async function RegelnPage({ params }: RegelnPageProps) {
           <p className="mt-2 text-gray-400">0 Punkte</p>
         </div>
       </section>
-    </main>
+    </AppShell>
   )
 }
