@@ -1,4 +1,14 @@
 import Link from "next/link"
+import {
+  Home,
+  Trophy,
+  ListChecks,
+  BarChart3,
+  BookOpen,
+  PlusCircle,
+  LogIn,
+  User,
+} from "lucide-react"
 import { LogoutButton } from "@/components/LogoutButton"
 
 type AppShellProps = {
@@ -7,77 +17,90 @@ type AppShellProps = {
   tippspielName?: string
 }
 
+function NavItem({
+  href,
+  icon,
+  label,
+}: {
+  href: string
+  icon: React.ReactNode
+  label: string
+}) {
+  return (
+    <Link
+      href={href}
+      className="flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium text-zinc-300 transition hover:bg-zinc-900 hover:text-white"
+    >
+      {icon}
+      {label}
+    </Link>
+  )
+}
+
 export function AppShell({
   children,
   tippspielId,
   tippspielName = "WM 2026 Tippspiel",
 }: AppShellProps) {
   return (
-    <div className="min-h-screen bg-zinc-950 text-zinc-100">
-      <aside className="fixed left-0 top-0 hidden h-screen w-72 border-r border-zinc-800 bg-zinc-950/95 p-6 md:block">
-        <div className="mb-10">
-          <p className="text-sm text-zinc-500">Tippspiel</p>
-          <h1 className="text-2xl font-bold">WM Tippspiel</h1>
+    <div className="min-h-screen bg-[radial-gradient(circle_at_top_left,_#1e293b,_#09090b_35%)] text-zinc-100">
+      <aside className="fixed left-0 top-0 hidden h-screen w-72 border-r border-zinc-800/80 bg-zinc-950/80 p-6 backdrop-blur-xl md:block">
+        <div className="mb-10 flex items-center gap-3">
+          <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white text-zinc-950">
+            <Trophy size={22} />
+          </div>
+
+          <div>
+            <p className="text-xs uppercase tracking-widest text-zinc-500">
+              Tippspiel
+            </p>
+            <h1 className="text-xl font-bold">WM Tippspiel</h1>
+          </div>
         </div>
 
         <nav className="space-y-2">
-          <Link
-            href="/dashboard"
-            className="block rounded-xl px-4 py-3 text-zinc-300 hover:bg-zinc-900"
-          >
-            Startseite
-          </Link>
+          <NavItem href="/dashboard" icon={<Home size={18} />} label="Startseite" />
 
           {tippspielId && (
-            <div className="pt-4">
-              <p className="mb-2 px-4 text-xs uppercase text-zinc-500">
+            <div className="pt-5">
+              <p className="mb-2 px-4 text-xs font-semibold uppercase tracking-widest text-zinc-500">
                 {tippspielName}
               </p>
 
-              <Link
+              <NavItem
                 href={`/tippspiele/${tippspielId}/tippen`}
-                className="block rounded-xl px-4 py-3 text-zinc-300 hover:bg-zinc-900"
-              >
-                Tippen
-              </Link>
+                icon={<ListChecks size={18} />}
+                label="Tippen"
+              />
 
-              <Link
+              <NavItem
                 href={`/tippspiele/${tippspielId}/rangliste`}
-                className="block rounded-xl px-4 py-3 text-zinc-300 hover:bg-zinc-900"
-              >
-                Rangliste
-              </Link>
+                icon={<BarChart3 size={18} />}
+                label="Rangliste"
+              />
 
-              <Link
+              <NavItem
                 href={`/tippspiele/${tippspielId}/regeln`}
-                className="block rounded-xl px-4 py-3 text-zinc-300 hover:bg-zinc-900"
-              >
-                Regeln
-              </Link>
+                icon={<BookOpen size={18} />}
+                label="Regeln"
+              />
             </div>
           )}
 
-          <div className="pt-4">
-            <Link
+          <div className="pt-5">
+            <NavItem
               href="/dashboard#create"
-              className="block rounded-xl px-4 py-3 text-zinc-300 hover:bg-zinc-900"
-            >
-              Tippspiel erstellen
-            </Link>
+              icon={<PlusCircle size={18} />}
+              label="Tippspiel erstellen"
+            />
 
-            <Link
+            <NavItem
               href="/dashboard#join"
-              className="block rounded-xl px-4 py-3 text-zinc-300 hover:bg-zinc-900"
-            >
-              Tippspiel beitreten
-            </Link>
+              icon={<LogIn size={18} />}
+              label="Tippspiel beitreten"
+            />
 
-            <Link
-              href="/profile"
-              className="block rounded-xl px-4 py-3 text-zinc-300 hover:bg-zinc-900"
-            >
-              Konto
-            </Link>
+            <NavItem href="/profile" icon={<User size={18} />} label="Konto" />
           </div>
         </nav>
 
