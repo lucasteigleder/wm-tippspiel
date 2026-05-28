@@ -10,6 +10,7 @@ import {
   User,
 } from "lucide-react"
 import { LogoutButton } from "@/components/LogoutButton"
+import { MobileSidebar } from "@/components/MobileSidebar"
 
 type AppShellProps = {
   children: React.ReactNode
@@ -44,6 +45,10 @@ export function AppShell({
 }: AppShellProps) {
   return (
     <div className="min-h-screen bg-[radial-gradient(circle_at_top_left,_#1e293b,_#09090b_35%)] text-zinc-100">
+     <MobileSidebar
+        tippspielId={tippspielId}
+        tippspielName={tippspielName}
+        />
       <aside className="fixed left-0 top-0 hidden h-screen w-72 border-r border-zinc-800/80 bg-zinc-950/80 p-6 backdrop-blur-xl md:block">
         <div className="mb-10 flex items-center gap-3">
           <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white text-zinc-950">
@@ -89,13 +94,13 @@ export function AppShell({
 
           <div className="pt-5">
             <NavItem
-              href="/dashboard/erstellen"
+              href="/tippspiele/erstellen"
               icon={<PlusCircle size={18} />}
               label="Tippspiel erstellen"
             />
 
             <NavItem
-              href="/dashboard/beitreten"
+              href="/tippspiele/beitreten"
               icon={<LogIn size={18} />}
               label="Tippspiel beitreten"
             />
@@ -110,7 +115,7 @@ export function AppShell({
       </aside>
 
       <main className="md:pl-72">
-        <div className="mx-auto max-w-6xl px-5 py-8 md:px-10">
+        <div className="mx-auto max-w-6xl px-5 pb-8 pt-24 md:px-10 md:pt-8">
           {children}
         </div>
       </main>
