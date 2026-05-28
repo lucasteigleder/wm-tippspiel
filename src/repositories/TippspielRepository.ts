@@ -1,5 +1,6 @@
 import { createSupabaseServerClient } from "@/lib/supabase/server"
 import { Tippspiel } from "@/models/Tippspiel"
+import { createSupabaseAdminClient } from "@/lib/supabase/admin"
 
 export class TippspielRepository {
   static async getByUser(userId: string): Promise<Tippspiel[]> {
@@ -20,7 +21,7 @@ export class TippspielRepository {
   }
 
   static async create(name: string, ownerId: string): Promise<Tippspiel> {
-    const supabase = await createSupabaseServerClient()
+    const supabase = createSupabaseAdminClient()
     const inviteCode = createInviteCode()
 
     const { data: tippspiel, error } = await supabase
