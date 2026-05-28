@@ -89,13 +89,13 @@ export function AppShell({
 
           <div className="pt-5">
             <NavItem
-              href="/dashboard#create"
+              href="/dashboard/erstellen"
               icon={<PlusCircle size={18} />}
               label="Tippspiel erstellen"
             />
 
             <NavItem
-              href="/dashboard#join"
+              href="/dashboard/beitreten"
               icon={<LogIn size={18} />}
               label="Tippspiel beitreten"
             />
