@@ -6,6 +6,8 @@ import { PredictionRepository } from "@/repositories/PredictionRepository"
 import { LeaderboardService, LeaderboardEntry } from "@/services/LeaderboardService"
 import { ProfileRepository } from "@/repositories/ProfileRepository"
 import { AppShell } from "@/components/AppShell"
+import { MatchPointsService } from "@/services/MatchPointsService"
+import { formatMatchDate } from "@/utils/date"
 
 type RanglistePageProps = {
   params: Promise<{
@@ -59,6 +61,12 @@ export default async function RanglistePage({ params }: RanglistePageProps) {
     userNameById
   )
 
+  const matchPoints = MatchPointsService.calculateForCurrentMatchday(
+  matches,
+  predictions,
+  userNameById
+)
+
   return (
     <AppShell tippspielId={id} tippspielName="WM 2026 Tippspiel">
       <Link href={`/tippspiele/${id}`} className="text-sm text-zinc-400">
@@ -108,6 +116,59 @@ export default async function RanglistePage({ params }: RanglistePageProps) {
           </tbody>
         </table>
       </div>
+      <section className="mt-10">
+  <h2 className="text-2xl font-bold">Punkte aktueller Spieltag</h2>
+
+  <div className="mt-5 grid gap-5">
+    {matchPoints.map(({ match, entries }) => (
+      <div
+        key={match.id}
+        className="rounded-3xl border border-zinc-800 bg-zinc-900/70 p-6 shadow-xl"
+      >
+        <p className="text-sm text-zinc-400">
+          {formatMatchDate(match.kickoff_at)}
+        </p>
+
+        <div className="mt-3 flex items-center justify-between gap-4">
+          <span className="font-bold">{match.home_team}</span>
+
+          <span className="rounded-xl bg-zinc-950 px-4 py-2 font-black">
+            {match.home_score !== null && match.away_score !== null
+              ? `${match.home_score} : ${match.away_score}`
+              : "Noch offen"}
+          </span>
+
+          <span className="font-bold">{match.away_team}</span>
+        </div>
+
+        <div className="mt-5 divide-y divide-zinc-800">
+          {entries.map((entry) => (
+            <div
+              key={entry.userId}
+              className="flex items-center justify-between py-3 text-sm"
+            >
+              <span>{entry.name}</span>
+
+              <span className="text-zinc-400">
+                Tipp: {entry.predictedHome} : {entry.predictedAway}
+              </span>
+
+              <span className="font-bold">
+                {entry.points} Punkte
+              </span>
+            </div>
+          ))}
+
+          {entries.length === 0 && (
+            <p className="py-4 text-sm text-zinc-400">
+              Noch keine Tipps für dieses Spiel.
+            </p>
+          )}
+        </div>
+      </div>
+    ))}
+  </div>
+</section>
     </AppShell>
   )
 }
