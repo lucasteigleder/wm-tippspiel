@@ -69,113 +69,136 @@ export default async function RanglistePage({ params }: RanglistePageProps) {
 )
 
   return (
-    <AppShell tippspielId={id} tippspielName="WM 2026 Tippspiel">
-      <Link href={`/tippspiele/${id}`} className="text-sm text-zinc-400">
-        ← Zurück zum Tippspiel
-      </Link>
+  <AppShell tippspielId={id} tippspielName="WM 2026 Tippspiel">
+    <Link href={`/tippspiele/${id}`} className="text-sm text-zinc-400">
+      ← Zurück zum Tippspiel
+    </Link>
 
-      <h1 className="mt-8 text-3xl font-bold">Rangliste</h1>
+    <section className="mt-8">
+      <p className="text-sm font-medium uppercase tracking-widest text-zinc-500">
+        Punkte & Platzierungen
+      </p>
 
-      <div className="mt-8 overflow-hidden rounded-xl border border-gray-800">
-        <table className="w-full">
-          <thead className="border-b border-gray-800">
-            <tr>
-              <th className="px-4 py-3 text-left">Platz</th>
-              <th className="px-4 py-3 text-left">Spieler</th>
-              <th className="px-4 py-3 text-right">Punkte</th>
-              <th className="px-4 py-3 text-right">Exakt</th>
-              <th className="px-4 py-3 text-right">Tendenz</th>
+      <h1 className="mt-3 text-4xl font-black">Rangliste</h1>
+    </section>
+
+    <section className="mt-8 grid gap-4 md:grid-cols-3">
+      {leaderboard.slice(0, 3).map((entry, index) => (
+        <div
+          key={entry.userId}
+          className="rounded-3xl border border-zinc-800 bg-zinc-900/70 p-6 shadow-xl"
+        >
+          <p className="text-sm text-zinc-400">Platz {index + 1}</p>
+          <h2 className="mt-2 text-2xl font-black">{entry.name}</h2>
+          <p className="mt-4 text-4xl font-black">{entry.points}</p>
+          <p className="text-sm text-zinc-400">Punkte</p>
+        </div>
+      ))}
+    </section>
+
+    <div className="mt-8 overflow-hidden rounded-3xl border border-zinc-800 bg-zinc-900/70 shadow-xl">
+      <table className="w-full">
+        <thead className="border-b border-zinc-800 text-sm text-zinc-400">
+          <tr>
+            <th className="px-4 py-4 text-left">Platz</th>
+            <th className="px-4 py-4 text-left">Spieler</th>
+            <th className="px-4 py-4 text-right">Punkte</th>
+            <th className="px-4 py-4 text-right">Exakt</th>
+            <th className="px-4 py-4 text-right">Tendenz</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {leaderboard.map((entry, index) => (
+            <tr key={entry.userId} className="border-b border-zinc-800/70">
+              <td className="px-4 py-4 font-bold">
+                {getPlacement(leaderboard, index)}
+              </td>
+
+              <td className="px-4 py-4">{entry.name}</td>
+
+              <td className="px-4 py-4 text-right font-black">
+                {entry.points}
+              </td>
+
+              <td className="px-4 py-4 text-right">
+                {entry.exactResults}
+              </td>
+
+              <td className="px-4 py-4 text-right">
+                {entry.correctTendencies}
+              </td>
             </tr>
-          </thead>
-
-          <tbody>
-            {leaderboard.map((entry, index) => (
-              <tr key={entry.userId} className="border-b border-gray-900">
-                <td className="px-4 py-3">
-                  {getPlacement(leaderboard, index)}
-                </td>
-                <td className="px-4 py-3">{entry.name}</td>
-                <td className="px-4 py-3 text-right font-bold">
-                  {entry.points}
-                </td>
-                <td className="px-4 py-3 text-right">
-                  {entry.exactResults}
-                </td>
-                <td className="px-4 py-3 text-right">
-                  {entry.correctTendencies}
-                </td>
-              </tr>
-            ))}
-
-            {leaderboard.length === 0 && (
-              <tr>
-                <td colSpan={5} className="px-4 py-8 text-center text-gray-400">
-                  Noch keine Punkte vorhanden.
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
-      <section className="mt-10">
-  <h2 className="text-2xl font-bold">Punkte aktueller Spieltag</h2>
-
-  <div className="mt-5 grid gap-5">
-    {matchPoints.map(({ match, entries }) => (
-      <div
-        key={match.id}
-        className="rounded-3xl border border-zinc-800 bg-zinc-900/70 p-6 shadow-xl"
-      >
-        <p className="text-sm text-zinc-400">
-          {formatMatchDate(match.kickoff_at)}
-        </p>
-
-        <div className="mt-4 grid grid-cols-[1fr_auto_1fr] items-center gap-4">
-  <div className="flex items-center gap-3">
-    <TeamLogo src={match.home_team_logo} alt={match.home_team} />
-    <span className="font-bold">{match.home_team}</span>
-  </div>
-
-  <span className="rounded-xl bg-zinc-950 px-4 py-2 text-center font-black">
-    {match.home_score !== null && match.away_score !== null
-      ? `${match.home_score} : ${match.away_score}`
-      : "offen"}
-  </span>
-
-  <div className="flex items-center justify-end gap-3 text-right">
-    <span className="font-bold">{match.away_team}</span>
-    <TeamLogo src={match.away_team_logo} alt={match.away_team} />
-  </div>
-</div>
-
-        <div className="mt-5 divide-y divide-zinc-800">
-          {entries.map((entry) => (
-            <div
-              key={entry.userId}
-              className="flex items-center justify-between py-3 text-sm"
-            >
-              <span>{entry.name}</span>
-
-              <span className="text-zinc-400">
-                Tipp: {entry.predictedHome} : {entry.predictedAway}
-              </span>
-
-              <span className="font-bold">
-                {entry.points} Punkte
-              </span>
-            </div>
           ))}
 
-          {entries.length === 0 && (
-            <p className="py-4 text-sm text-zinc-400">
-              Tipps werden erst nach Anpfiff angezeigt.
-            </p>
+          {leaderboard.length === 0 && (
+            <tr>
+              <td colSpan={5} className="px-4 py-10 text-center text-zinc-400">
+                Noch keine Punkte vorhanden.
+              </td>
+            </tr>
           )}
-        </div>
+        </tbody>
+      </table>
+    </div>
+
+    <section className="mt-10">
+      <h2 className="text-2xl font-black">Punkte aktueller Spieltag</h2>
+
+      <div className="mt-5 grid gap-5">
+        {matchPoints.map(({ match, entries }) => (
+          <div
+            key={match.id}
+            className="rounded-3xl border border-zinc-800 bg-zinc-900/70 p-6 shadow-xl"
+          >
+            <p className="text-sm text-zinc-400">
+              {formatMatchDate(match.kickoff_at)}
+            </p>
+
+            <div className="mt-4 grid grid-cols-[1fr_auto_1fr] items-center gap-4">
+              <div className="flex items-center gap-3">
+                <TeamLogo src={match.home_team_logo} alt={match.home_team} />
+                <span className="font-bold">{match.home_team}</span>
+              </div>
+
+              <span className="rounded-xl bg-zinc-950 px-4 py-2 text-center font-black">
+                {match.home_score !== null && match.away_score !== null
+                  ? `${match.home_score} : ${match.away_score}`
+                  : "offen"}
+              </span>
+
+              <div className="flex items-center justify-end gap-3 text-right">
+                <span className="font-bold">{match.away_team}</span>
+                <TeamLogo src={match.away_team_logo} alt={match.away_team} />
+              </div>
+            </div>
+
+            <div className="mt-5 grid gap-2">
+              {entries.map((entry) => (
+                <div
+                  key={entry.userId}
+                  className="flex items-center justify-between rounded-2xl bg-zinc-950/70 px-4 py-3 text-sm"
+                >
+                  <span className="font-semibold">{entry.name}</span>
+
+                  <span className="text-zinc-400">
+                    {entry.predictedHome} : {entry.predictedAway}
+                  </span>
+
+                  <span className="font-black">{entry.points} Pkt.</span>
+                </div>
+              ))}
+
+              {entries.length === 0 && (
+                <p className="rounded-2xl bg-zinc-950/70 px-4 py-4 text-sm text-zinc-400">
+                  Tipps werden erst nach Anpfiff angezeigt.
+                </p>
+              )}
+            </div>
+          </div>
+        ))}
       </div>
-    ))}
-  </div>
-</section>
-    </AppShell>
-  )
+    </section>
+  </AppShell>
+)
 }
