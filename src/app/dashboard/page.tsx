@@ -4,6 +4,7 @@ import { LogoutButton } from "@/components/LogoutButton"
 import { TippspielRepository } from "@/repositories/TippspielRepository"
 import { AppShell } from "@/components/AppShell"
 import Link from "next/link"
+import { ProfileRepository } from "@/repositories/ProfileRepository"
 
 export default async function DashboardPage() {
   const supabase = await createSupabaseServerClient()
@@ -16,6 +17,12 @@ export default async function DashboardPage() {
     redirect("/login")
   }
 
+  const profiles = await ProfileRepository.getAll()
+  const profile = profiles.find((profile) => profile.id === user.id)
+
+  const displayName = 
+    profile?.display_name ?? profile?.username ?? user.email
+
   const tippspiele = await TippspielRepository.getByUser(user.id)
 
   return (
@@ -24,7 +31,7 @@ export default async function DashboardPage() {
         <div>
           <h1 className="text-3xl font-bold">Dashboard</h1>
           <p className="mt-2 text-gray-400">
-            Eingeloggt als {user.email}
+            Willkommen zurück, {displayName}!
           </p>
         </div>
       </div>

@@ -31,7 +31,10 @@ export class MatchPointsService {
         (prediction) => prediction.match_id === match.id
       )
 
+      const isStarted = new Date(match.kickoff_at).getTime() <= Date.now()
+
       const entries = matchPredictions
+        .filter(() => isStarted)
         .map((prediction) => ({
           userId: prediction.user_id,
           name: userNameById.get(prediction.user_id) ?? "Unbekannt",

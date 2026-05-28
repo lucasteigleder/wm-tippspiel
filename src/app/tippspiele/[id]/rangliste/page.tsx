@@ -168,7 +168,7 @@ export default async function RanglistePage({ params }: RanglistePageProps) {
 
           {entries.length === 0 && (
             <p className="py-4 text-sm text-zinc-400">
-              Noch keine Tipps für dieses Spiel.
+              Tipps werden erst nach Anpfiff angezeigt.
             </p>
           )}
         </div>
