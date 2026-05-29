@@ -12,6 +12,7 @@ import {
 } from "lucide-react"
 import { LogoutButton } from "@/components/LogoutButton"
 import { MobileSidebar } from "@/components/MobileSidebar"
+import { Megaphone } from "lucide-react"
 
 type AppShellProps = {
   children: React.ReactNode
@@ -96,6 +97,11 @@ export function AppShell({
                 icon={<Table2 size={18} />}
                 label="Gruppen"
               />
+              <NavItem
+  href={`/tippspiele/${tippspielId}/infos`}
+  icon={<Megaphone size={18} />}
+  label="Infos"
+/>
             </div>
           )}
 
