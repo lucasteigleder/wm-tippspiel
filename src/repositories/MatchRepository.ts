@@ -1,11 +1,11 @@
-import { createSupabaseServerClient } from "@/lib/supabase/server"
-import { Match } from "@/models/Match"
 import { unstable_cache } from "next/cache"
+import { createSupabaseAdminClient } from "@/lib/supabase/admin"
+import { Match } from "@/models/Match"
 
 export class MatchRepository {
   static getAll = unstable_cache(
     async () => {
-      const supabase = await createSupabaseServerClient()
+      const supabase = createSupabaseAdminClient()
 
       const { data, error } = await supabase
         .from("matches")
@@ -20,6 +20,7 @@ export class MatchRepository {
     },
     ["matches"],
     {
+      tags: ["matches"],
       revalidate: 300,
     }
   )
