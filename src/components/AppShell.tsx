@@ -116,6 +116,10 @@ export function AppShell({
           </div>
         </nav>
 
+        <Link href="/impressum" className="block text-sm text-zinc-500 hover:text-zinc-300">
+  Impressum
+</Link>
+
         <div className="absolute bottom-6 left-6 right-6">
           <LogoutButton />
         </div>
