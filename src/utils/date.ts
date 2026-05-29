@@ -1,5 +1,6 @@
 export function formatMatchDate(dateString: string) {
   return new Date(dateString).toLocaleString("de-DE", {
+    timeZone: "Europe/Berlin",
     day: "numeric",
     month: "numeric",
     year: "numeric",

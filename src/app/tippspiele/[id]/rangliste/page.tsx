@@ -104,7 +104,7 @@ export default async function RanglistePage({ params }: RanglistePageProps) {
             <th className="px-4 py-4 text-left">Spieler</th>
             <th className="px-4 py-4 text-right">Punkte</th>
             <th className="px-4 py-4 text-right">Exakt</th>
-            <th className="px-4 py-4 text-right">Tendenz</th>
+            <th className="hidden px-4 py-4 text-right sm:table-cell">Tendenz</th>
           </tr>
         </thead>
 
@@ -125,7 +125,7 @@ export default async function RanglistePage({ params }: RanglistePageProps) {
                 {entry.exactResults}
               </td>
 
-              <td className="px-4 py-4 text-right">
+              <td className="hidden px-4 py-4 text-right sm:table-cell">
                 {entry.correctTendencies}
               </td>
             </tr>
