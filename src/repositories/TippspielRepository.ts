@@ -109,6 +109,23 @@ export class TippspielRepository {
     profile: profiles.find((profile) => profile.id === member.user_id),
   }))
 }
+
+static async getMembership(tippspielId: string, userId: string) {
+  const supabase = await createSupabaseServerClient()
+
+  const { data, error } = await supabase
+    .from("tippspiel_members")
+    .select("*")
+    .eq("tippspiel_id", tippspielId)
+    .eq("user_id", userId)
+    .single()
+
+  if (error) {
+    return null
+  }
+
+  return data
+}
 }
 
 function createInviteCode() {

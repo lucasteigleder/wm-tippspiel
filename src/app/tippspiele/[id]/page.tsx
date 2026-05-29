@@ -35,6 +35,9 @@ export default async function TippspielPage({ params }: TippspielPageProps) {
 
   const members = await TippspielRepository.getMembers(id)
 
+  const membership = await TippspielRepository.getMembership(id, user.id)
+  const isAdmin = membership?.role === "admin"
+
   return (
     <AppShell      tippspielId={tippspiel.id}
       tippspielName={tippspiel.name}
@@ -45,9 +48,11 @@ export default async function TippspielPage({ params }: TippspielPageProps) {
 
       <section className="mt-8">
         <h1 className="text-4xl font-bold">{tippspiel.name}</h1>
-        <p className="mt-2 text-gray-400">
-          Invite Code: {tippspiel.invite_code}
-        </p>
+        {isAdmin && (
+  <p className="mt-2 text-zinc-400">
+    Invite Code: {tippspiel.invite_code}
+  </p>
+)}
       </section>
 
       <section className="mt-10 grid gap-4 md:grid-cols-3">
@@ -85,7 +90,9 @@ export default async function TippspielPage({ params }: TippspielPageProps) {
       <section className="mt-10">
         <div className="flex items-center justify-between gap-4">
           <h2 className="text-2xl font-semibold">Mitglieder</h2>
-          <CopyInviteButton inviteCode={tippspiel.invite_code} />
+          {isAdmin && (
+  <CopyInviteButton inviteCode={tippspiel.invite_code} />
+)}
         </div>
 
         <div className="mt-4 grid gap-3">
