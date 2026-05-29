@@ -18,12 +18,14 @@ export default async function DashboardPage() {
   }
 
   const profiles = await ProfileRepository.getAll()
-  const profile = profiles.find((profile) => profile.id === user.id)
+
+  const [profile, tippspiele] = await Promise.all([
+  ProfileRepository.getById(user.id),
+  TippspielRepository.getByUser(user.id),
+])
 
   const displayName =
     profile?.display_name ?? profile?.username ?? user.email
-
-  const tippspiele = await TippspielRepository.getByUser(user.id)
 
   return (
     <AppShell>

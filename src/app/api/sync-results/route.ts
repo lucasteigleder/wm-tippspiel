@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server"
+import { revalidateTag } from "next/cache"
 import { createSupabaseAdminClient } from "@/lib/supabase/admin"
 import { FootballApiService } from "@/services/FootballApiService"
 
@@ -22,7 +23,7 @@ export async function POST(request: Request) {
     )
   }
 
-  const supabase = await createSupabaseAdminClient()
+  const supabase = createSupabaseAdminClient()
   const fixtures = await FootballApiService.getWorldCupFixtures()
 
   let updated = 0
@@ -58,6 +59,10 @@ export async function POST(request: Request) {
       updated++
     }
   }
+
+  // revalidate the "matches" tag for the current path
+  const url = new URL(request.url)
+  revalidateTag("matches", url.pathname)
 
   return NextResponse.json({
     success: errors.length === 0,

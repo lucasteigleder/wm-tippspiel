@@ -45,9 +45,11 @@ export default async function RanglistePage({ params }: RanglistePageProps) {
     redirect("/login")
   }
 
-  const matches = await MatchRepository.getAll()
-  const predictions = await PredictionRepository.getByTippspiel(id)
-  const profiles = await ProfileRepository.getAll()
+  const [matches, predictions, profiles] = await Promise.all([
+  MatchRepository.getAll(),
+  PredictionRepository.getByTippspiel(id),
+  ProfileRepository.getAll(),
+])
 
   const userNameById = new Map(
     profiles.map((profile) => [

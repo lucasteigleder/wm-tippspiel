@@ -27,12 +27,12 @@ export default async function TippenPage({ params }: TippenPageProps) {
     redirect("/login")
   }
 
-  const matches = await MatchRepository.getAll()
+  const [matches, predictions] = await Promise.all([
+  MatchRepository.getAll(),
+  PredictionRepository.getByTippspielAndUser(id, user.id),
+])
+
   const nextMatch = getNextMatch(matches)
-  const predictions = await PredictionRepository.getByTippspielAndUser(
-    id,
-    user.id
-  )
 
   const predictionByMatchId = new Map(
     predictions.map((prediction) => [prediction.match_id, prediction])
