@@ -14,6 +14,7 @@ import {
   LogIn,
   User,
   Table2,
+  Megaphone,
 } from "lucide-react"
 
 type MobileSidebarProps = {
@@ -125,6 +126,13 @@ export function MobileSidebar({
                     href={`/tippspiele/${tippspielId}/gruppen`}
                     icon={<Table2 size={18} />}
                     label="Gruppen"
+                    onClick={() => setOpen(false)}
+                  />
+
+                  <MobileNavItem
+                    href={`/tippspiele/${tippspielId}/infos`}
+                    icon={<Megaphone size={18} />}
+                    label="Infos"
                     onClick={() => setOpen(false)}
                   />
                 </>
