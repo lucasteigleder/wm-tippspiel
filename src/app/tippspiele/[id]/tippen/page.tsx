@@ -4,7 +4,8 @@ import { createSupabaseServerClient } from "@/lib/supabase/server"
 import { MatchRepository } from "@/repositories/MatchRepository"
 import { PredictionRepository } from "@/repositories/PredictionRepository"
 import { AppShell } from "@/components/AppShell"
-import { MatchPredictionCard } from "@/components/MatchPredictionCard"
+import { PredictionInputs } from "@/components/PredictionInputs"
+import { savePredictions } from "@/app/tippspiele/[id]/tippen/actions"
 import { StageAccordion } from "@/components/StageAccordion"
 import { getNextMatch } from "@/utils/matchStatus"
 import { formatStageName } from "@/utils/stage"
@@ -58,17 +59,26 @@ export default async function TippenPage({ params }: TippenPageProps) {
   title={formatStageName(stage)}
   defaultOpen={index === 0}
 >
+  <form action={savePredictions}>
+  <input type="hidden" name="tippspielId" value={id} />
+
   <div className="grid gap-4">
     {matches.map((match) => (
-      <MatchPredictionCard
+      <PredictionInputs
         key={match.id}
         match={match}
-        tippspielId={id}
         prediction={predictionByMatchId.get(match.id)}
         isNextMatch={nextMatch?.id === match.id}
       />
     ))}
   </div>
+
+  <div className="sticky bottom-4 mt-5 flex justify-center">
+    <button className="rounded-2xl bg-white px-6 py-3 font-black text-zinc-950 shadow-2xl transition hover:bg-zinc-200">
+      Alle Tipps speichern
+    </button>
+  </div>
+</form>
 </StageAccordion>
         ))}
       </div>
