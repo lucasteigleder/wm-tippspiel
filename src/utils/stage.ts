@@ -14,6 +14,10 @@ export function formatStageName(stage: string) {
   if (normalized.includes("group k")) return "Gruppe K"
   if (normalized.includes("group l")) return "Gruppe L"
 
+  if (normalized.includes("group stage - 1")) return "Spieltag 1"
+  if (normalized.includes("group stage - 2")) return "Spieltag 2"
+  if (normalized.includes("group stage - 3")) return "Spieltag 3"
+
   if (normalized.includes("sechzehntelfinale")) return "Sechzehntelfinale"
   if (normalized.includes("round of 32")) return "Sechzehntelfinale"
 
