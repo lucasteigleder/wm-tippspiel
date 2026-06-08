@@ -67,7 +67,8 @@ export default async function RanglistePage({ params }: RanglistePageProps) {
   const matchPoints = MatchPointsService.calculateForCurrentMatchday(
   matches,
   predictions,
-  userNameById
+  userNameById,
+  user.id
 )
 
   return (
@@ -193,7 +194,7 @@ export default async function RanglistePage({ params }: RanglistePageProps) {
 
               {entries.length === 0 && (
                 <p className="rounded-2xl bg-zinc-950/70 px-4 py-4 text-sm text-zinc-400">
-                  Tipps werden erst nach Anpfiff angezeigt.
+                  Noch kein Tipp vorhanden. Andere Tipps werden erst nach Anpfiff angezeigt.
                 </p>
               )}
             </div>

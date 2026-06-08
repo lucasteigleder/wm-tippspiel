@@ -17,44 +17,56 @@ export type MatchPoints = {
 
 export class MatchPointsService {
   static calculateForCurrentMatchday(
-    matches: Match[],
-    predictions: Prediction[],
-    userNameById: Map<string, string>
-  ): MatchPoints[] {
-    const currentMatchday = getCurrentMatchday(matches)
-    const currentMatches = matches.filter(
-      (match) => match.matchday === currentMatchday
+  matches: Match[],
+  predictions: Prediction[],
+  userNameById: Map<string, string>,
+  currentUserId: string
+): MatchPoints[] {
+  const currentMatchday = getCurrentMatchday(matches)
+  const currentMatches = matches.filter(
+    (match) => match.matchday === currentMatchday
+  )
+
+  return currentMatches.map((match) => {
+    const isStarted = new Date(match.kickoff_at).getTime() <= Date.now()
+
+    const matchPredictions = predictions.filter(
+      (prediction) =>
+        prediction.match_id === match.id &&
+        (isStarted || prediction.user_id === currentUserId)
     )
 
-    return currentMatches.map((match) => {
-      const matchPredictions = predictions.filter(
-        (prediction) => prediction.match_id === match.id
-      )
+    const entries = matchPredictions
+      .map((prediction) => ({
+        userId: prediction.user_id,
+        name:
+          prediction.user_id === currentUserId
+            ? "Du"
+            : userNameById.get(prediction.user_id) ?? "Unbekannt",
+        predictedHome: prediction.predicted_home_score,
+        predictedAway: prediction.predicted_away_score,
+        points:
+          match.home_score !== null && match.away_score !== null
+            ? ScoringService.calculatePoints(
+                prediction.predicted_home_score,
+                prediction.predicted_away_score,
+                match.home_score,
+                match.away_score
+              )
+            : 0,
+      }))
+      .sort((a, b) => {
+        if (a.userId === currentUserId) return -1
+        if (b.userId === currentUserId) return 1
+        return b.points - a.points
+      })
 
-      const isStarted = new Date(match.kickoff_at).getTime() <= Date.now()
-
-      const entries = matchPredictions
-        .filter(() => isStarted)
-        .map((prediction) => ({
-          userId: prediction.user_id,
-          name: userNameById.get(prediction.user_id) ?? "Unbekannt",
-          predictedHome: prediction.predicted_home_score,
-          predictedAway: prediction.predicted_away_score,
-          points: ScoringService.calculatePoints(
-            prediction.predicted_home_score,
-            prediction.predicted_away_score,
-            match.home_score,
-            match.away_score
-          ),
-        }))
-        .sort((a, b) => b.points - a.points)
-
-      return {
-        match,
-        entries,
-      }
-    })
-  }
+    return {
+      match,
+      entries,
+    }
+  })
+}
 }
 
 function getCurrentMatchday(matches: Match[]) {
