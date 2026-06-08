@@ -1,7 +1,10 @@
+import Link from "next/link"
 import { redirect } from "next/navigation"
+import { Gift } from "lucide-react"
 import { createSupabaseServerClient } from "@/lib/supabase/server"
 import { BonusRepository } from "@/repositories/BonusRepository"
-import { saveBonusAnswer } from "./actions"
+import { TippspielRepository } from "@/repositories/TippspielRepository"
+import { createBonusQuestion, saveBonusAnswer } from "./actions"
 import { AppShell } from "@/components/AppShell"
 
 export default async function BonusPage({
@@ -10,7 +13,6 @@ export default async function BonusPage({
   params: Promise<{ id: string }>
 }) {
   const { id } = await params
-
   const supabase = await createSupabaseServerClient()
 
   const {
@@ -21,52 +23,114 @@ export default async function BonusPage({
     redirect("/login")
   }
 
-  const questions = await BonusRepository.getQuestions(id)
-  const answers = await BonusRepository.getAnswers(user.id)
+  const [membership, questions, answers] = await Promise.all([
+    TippspielRepository.getMembership(id, user.id),
+    BonusRepository.getQuestions(id),
+    BonusRepository.getAnswers(user.id),
+  ])
+
+  const isAdmin = membership?.role === "admin"
 
   const answerMap = new Map(
-    answers.map((a) => [a.question_id, a.answer])
+    answers.map((answer) => [answer.question_id, answer.answer])
   )
 
   return (
     <AppShell tippspielId={id} tippspielName="WM 2026 Tippspiel">
-      <h1 className="mb-8 text-4xl font-bold">
-        Bonusfragen
-      </h1>
+      <Link href={`/tippspiele/${id}`} className="text-sm text-zinc-400">
+        ← Zurück zum Tippspiel
+      </Link>
 
-      <div className="space-y-5">
+      <section className="mt-8">
+        <p className="text-sm font-medium uppercase tracking-widest text-zinc-500">
+          Zusatzpunkte
+        </p>
+
+        <h1 className="mt-3 text-4xl font-black">Bonusfragen</h1>
+
+        <p className="mt-3 max-w-2xl text-zinc-400">
+          Beantworte Bonusfragen vor Turnierbeginn und sammle zusätzliche
+          Punkte für die Rangliste.
+        </p>
+      </section>
+
+      {isAdmin && (
+        <form
+          action={createBonusQuestion}
+          className="mt-8 rounded-3xl border border-zinc-800 bg-zinc-900/70 p-6 shadow-xl"
+        >
+          <input type="hidden" name="tippspielId" value={id} />
+
+          <h2 className="text-2xl font-black">Bonusfrage erstellen</h2>
+
+          <input
+            name="question"
+            placeholder="z. B. Wer wird Weltmeister?"
+            className="mt-5 w-full rounded-xl border border-zinc-700 bg-zinc-950 px-4 py-3 outline-none focus:border-white"
+            required
+          />
+
+          <input
+            name="points"
+            type="number"
+            min="1"
+            defaultValue={10}
+            className="mt-4 w-full rounded-xl border border-zinc-700 bg-zinc-950 px-4 py-3 outline-none focus:border-white"
+            required
+          />
+
+          <button className="mt-5 rounded-xl bg-white px-5 py-3 font-bold text-black transition hover:bg-zinc-200">
+            Frage erstellen
+          </button>
+        </form>
+      )}
+
+      <section className="mt-8 space-y-5">
         {questions.map((question) => (
           <form
             key={question.id}
             action={saveBonusAnswer}
-            className="rounded-3xl border border-zinc-800 bg-zinc-900/70 p-6"
+            className="rounded-3xl border border-zinc-800 bg-zinc-900/70 p-6 shadow-xl"
           >
-            <input
-              type="hidden"
-              name="questionId"
-              value={question.id}
-            />
+            <input type="hidden" name="questionId" value={question.id} />
+            <input type="hidden" name="tippspielId" value={id} />
 
-            <p className="font-bold text-xl">
-              {question.question}
-            </p>
+            <div className="flex items-start gap-4">
+              <div className="rounded-2xl bg-white p-3 text-zinc-950">
+                <Gift size={22} />
+              </div>
 
-            <p className="mt-1 text-sm text-zinc-400">
-              {question.points} Punkte
-            </p>
+              <div className="flex-1">
+                <div className="flex flex-wrap items-start justify-between gap-3">
+                  <h2 className="text-xl font-black">{question.question}</h2>
 
-            <input
-              name="answer"
-              defaultValue={answerMap.get(question.id) ?? ""}
-              className="mt-4 w-full rounded-xl border border-zinc-700 bg-zinc-950 px-4 py-3"
-            />
+                  <span className="rounded-xl bg-zinc-950 px-3 py-2 text-sm font-bold text-zinc-300">
+                    {question.points} Punkte
+                  </span>
+                </div>
 
-            <button className="mt-4 rounded-xl bg-white px-5 py-2 font-bold text-black">
-              Speichern
-            </button>
+                <input
+                  name="answer"
+                  defaultValue={answerMap.get(question.id) ?? ""}
+                  placeholder="Deine Antwort"
+                  className="mt-5 w-full rounded-xl border border-zinc-700 bg-zinc-950 px-4 py-3 outline-none focus:border-white"
+                  required
+                />
+
+                <button className="mt-4 rounded-xl bg-white px-5 py-2 font-bold text-black transition hover:bg-zinc-200">
+                  Antwort speichern
+                </button>
+              </div>
+            </div>
           </form>
         ))}
-      </div>
+
+        {questions.length === 0 && (
+          <div className="rounded-3xl border border-dashed border-zinc-700 bg-zinc-900/40 p-8 text-center text-zinc-400">
+            Noch keine Bonusfragen vorhanden.
+          </div>
+        )}
+      </section>
     </AppShell>
   )
 }
