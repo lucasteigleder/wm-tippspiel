@@ -29,12 +29,19 @@ export async function savePredictions(formData: FormData) {
     }
 
     const matchId = key.replace("homeScore-", "")
-    const homeScore = Number(value)
-    const awayScore = Number(formData.get(`awayScore-${matchId}`))
+    const homeValue = value.toString()
+const awayValue = formData.get(`awayScore-${matchId}`)?.toString()
 
-    if (Number.isNaN(homeScore) || Number.isNaN(awayScore)) {
-      continue
-    }
+if (homeValue === "" || !awayValue || awayValue === "") {
+  continue
+}
+
+const homeScore = Number(homeValue)
+const awayScore = Number(awayValue)
+
+if (Number.isNaN(homeScore) || Number.isNaN(awayScore)) {
+  continue
+}
 
     const { data: match, error: matchError } = await supabase
       .from("matches")
