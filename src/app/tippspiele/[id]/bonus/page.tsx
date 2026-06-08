@@ -1,6 +1,13 @@
 import Link from "next/link"
 import { redirect } from "next/navigation"
-import { Gift } from "lucide-react"
+import {
+  Gift,
+  Trophy,
+  Goal,
+  Shield,
+  User,
+  Medal,
+} from "lucide-react"
 import { createSupabaseServerClient } from "@/lib/supabase/server"
 import { BonusRepository } from "@/repositories/BonusRepository"
 import { TippspielRepository } from "@/repositories/TippspielRepository"
@@ -37,6 +44,20 @@ const bonusLocked =
   const answerMap = new Map(
     answers.map((answer) => [answer.question_id, answer.answer])
   )
+
+  function getBonusIcon(question: string) {
+  const q = question.toLowerCase()
+
+  if (q.includes("weltmeister")) return <Trophy size={22} />
+  if (q.includes("meister")) return <Trophy size={22} />
+   if (q.includes("deutschland")) return <Trophy size={22} />
+  if (q.includes("tore")) return <Goal size={22} />
+  if (q.includes("tor")) return <Goal size={22} />
+  if (q.includes("spieler")) return <User size={22} />
+  if (q.includes("gegentore")) return <Shield size={22} />
+
+  return <Gift size={22} />
+}
 
   return (
     <AppShell tippspielId={id} tippspielName="WM 2026 Tippspiel">
