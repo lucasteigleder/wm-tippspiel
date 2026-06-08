@@ -30,20 +30,33 @@ export default async function BonusPage({
     redirect("/login")
   }
 
-  const [membership, questions, answers] = await Promise.all([
-    TippspielRepository.getMembership(id, user.id),
-    BonusRepository.getQuestions(id),
-    BonusRepository.getAnswers(user.id),
-  ])
-
-const bonusLocked =
+  const bonusLocked =
   new Date() >= new Date("2026-06-11T21:00:00+02:00")
+
+const [membership, questions, answers, allAnswers] = await Promise.all([
+  TippspielRepository.getMembership(id, user.id),
+  BonusRepository.getQuestions(id),
+  BonusRepository.getAnswers(user.id),
+  bonusLocked ? BonusRepository.getAllAnswersByTippspiel(id) : Promise.resolve([]),
+])
 
   const isAdmin = membership?.role === "admin"
 
   const answerMap = new Map(
     answers.map((answer) => [answer.question_id, answer.answer])
   )
+
+  const allAnswersByQuestionId = new Map<string, typeof allAnswers>()
+
+for (const answer of allAnswers) {
+  const questionId = answer.question_id
+
+  if (!allAnswersByQuestionId.has(questionId)) {
+    allAnswersByQuestionId.set(questionId, [])
+  }
+
+  allAnswersByQuestionId.get(questionId)!.push(answer)
+}
 
   function getBonusIcon(question: string) {
   const q = question.toLowerCase()
@@ -157,6 +170,37 @@ const bonusLocked =
                 className="mt-4 rounded-xl bg-white px-5 py-2 font-bold text-black transition hover:bg-zinc-200">
                   Antwort speichern
                 </button>
+
+                {bonusLocked && (
+  <div className="mt-5 rounded-2xl bg-zinc-950/70 p-4">
+    <p className="text-sm font-bold text-zinc-300">
+      Antworten der anderen
+    </p>
+
+    <div className="mt-3 space-y-2">
+      {(allAnswersByQuestionId.get(question.id) ?? []).map((answer) => {
+        const profile = Array.isArray(answer.profiles)
+          ? answer.profiles[0]
+          : answer.profiles
+
+        const name =
+          profile?.display_name ??
+          profile?.username ??
+          "Unbekannt"
+
+        return (
+          <div
+            key={answer.id}
+            className="flex items-center justify-between gap-3 rounded-xl bg-zinc-900 px-3 py-2 text-sm"
+          >
+            <span className="font-semibold">{name}</span>
+            <span className="text-zinc-300">{answer.answer}</span>
+          </div>
+        )
+      })}
+    </div>
+  </div>
+)}
               </div>
             </div>
           </form>
