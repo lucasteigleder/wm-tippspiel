@@ -16,6 +16,7 @@ import {
   Table2,
   Megaphone,
   Gift,
+  LineChart,
 } from "lucide-react"
 
 type MobileSidebarProps = {
@@ -120,6 +121,13 @@ export function MobileSidebar({
                     href={`/tippspiele/${tippspielId}/regeln`}
                     icon={<BookOpen size={18} />}
                     label="Regeln"
+                    onClick={() => setOpen(false)}
+                  />
+
+                  <MobileNavItem
+                    href={`/tippspiele/${tippspielId}/verlauf`}
+                    icon={<LineChart size={18} />}
+                    label="Verlauf"
                     onClick={() => setOpen(false)}
                   />
 

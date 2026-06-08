@@ -11,6 +11,7 @@ import {
   Table2,
   Megaphone,
   Gift,
+  LineChart,
 } from "lucide-react"
 import { LogoutButton } from "@/components/LogoutButton"
 import { MobileSidebar } from "@/components/MobileSidebar"
@@ -94,6 +95,12 @@ export function AppShell({
                 icon={<BookOpen size={18} />}
                 label="Regeln"
               />
+
+              <NavItem
+  href={`/tippspiele/${tippspielId}/verlauf`}
+  icon={<LineChart size={18} />}
+  label="Verlauf"
+/>
 
               <NavItem
                 href={`/tippspiele/${tippspielId}/gruppen`}
