@@ -16,4 +16,6 @@ export interface Match {
   home_score: number | null
   away_score: number | null
   created_at: string
+
+  is_placeholder: boolean
 }

@@ -33,7 +33,10 @@ export function PredictionInputs({
   prediction,
   isNextMatch = false,
 }: PredictionInputsProps) {
-  const isLocked = new Date(match.kickoff_at).getTime() <= Date.now()
+  const isPlaceholder = match.is_placeholder
+  const isLocked =
+    isPlaceholder || new Date(match.kickoff_at).getTime() <= Date.now()
+
   const hasResult = match.home_score !== null && match.away_score !== null
 
   return (
@@ -43,13 +46,19 @@ export function PredictionInputs({
           {formatMatchDate(match.kickoff_at)}
         </p>
 
-        {isNextMatch && (
+        {isNextMatch && !isPlaceholder && (
           <span className="rounded-xl bg-blue-500/10 px-3 py-2 text-xs font-bold text-blue-400">
             Nächstes Spiel · {getCountdownText(match.kickoff_at)}
           </span>
         )}
 
-        {isLocked && (
+        {isPlaceholder && (
+          <span className="rounded-xl bg-yellow-500/10 px-3 py-2 text-xs font-bold text-yellow-400">
+            Teams noch offen
+          </span>
+        )}
+
+        {!isPlaceholder && isLocked && (
           <span className="rounded-xl bg-zinc-800 px-3 py-2 text-xs font-bold text-zinc-400">
             Gesperrt
           </span>
