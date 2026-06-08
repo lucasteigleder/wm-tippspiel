@@ -14,11 +14,23 @@ export function formatStageName(stage: string) {
   if (normalized.includes("group k")) return "Gruppe K"
   if (normalized.includes("group l")) return "Gruppe L"
 
+  if (normalized.includes("sechzehntelfinale")) return "Sechzehntelfinale"
   if (normalized.includes("round of 32")) return "Sechzehntelfinale"
+
+  if (normalized.includes("achtelfinale")) return "Achtelfinale"
   if (normalized.includes("round of 16")) return "Achtelfinale"
+
+  if (normalized.includes("viertelfinale")) return "Viertelfinale"
   if (normalized.includes("quarter")) return "Viertelfinale"
+
+  if (normalized.includes("halbfinale")) return "Halbfinale"
   if (normalized.includes("semi")) return "Halbfinale"
-  if (normalized.includes("final")) return "Finale"
+
+  if (normalized.includes("spiel um platz 3")) return "Spiel um Platz 3"
+  if (normalized.includes("third")) return "Spiel um Platz 3"
+
+  if (normalized === "finale") return "Finale"
+  if (normalized === "final") return "Finale"
 
   return stage
 }
