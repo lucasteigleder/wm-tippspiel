@@ -5,6 +5,9 @@ import { AppShell } from "@/components/AppShell"
 import { createSupabaseServerClient } from "@/lib/supabase/server"
 import { TippspielRepository } from "@/repositories/TippspielRepository"
 import { ProfileRepository } from "@/repositories/ProfileRepository"
+import { MatchRepository } from "@/repositories/MatchRepository"
+import { PredictionRepository } from "@/repositories/PredictionRepository"
+import { OpenPredictionsService } from "@/services/OpenPredictionsService"
 
 export default async function DashboardPage() {
   const supabase = await createSupabaseServerClient()
@@ -19,10 +22,20 @@ export default async function DashboardPage() {
 
   const profiles = await ProfileRepository.getAll()
 
-  const [profile, tippspiele] = await Promise.all([
+  const [profile, tippspiele, matches] = await Promise.all([
   ProfileRepository.getById(user.id),
   TippspielRepository.getByUser(user.id),
+  MatchRepository.getAll(),
 ])
+
+const firstTippspiel = tippspiele[0]
+
+const predictions = firstTippspiel
+  ? await PredictionRepository.getByTippspielAndUser(firstTippspiel.id, user.id)
+  : []
+
+const openMatches = OpenPredictionsService.getOpenMatches(matches, predictions)
+const nextOpenMatch = openMatches[0]
 
   const displayName =
     profile?.display_name ?? profile?.username ?? user.email
@@ -38,10 +51,33 @@ export default async function DashboardPage() {
           Willkommen zurück, {displayName}
         </h1>
 
-        <p className="mt-3 max-w-2xl text-zinc-400">
-          Verwalte deine Tipprunden, gib deine WM-Tipps ab und verfolge die
-          Rangliste live.
-        </p>
+        {firstTippspiel && (
+  <section className="mt-6 rounded-3xl border border-zinc-800 bg-zinc-900/70 p-6 shadow-xl">
+    <p className="text-sm font-medium uppercase tracking-widest text-zinc-500">
+      Offene Tipps
+    </p>
+
+    <h2 className="mt-3 text-3xl font-black">
+      {openMatches.length} Spiele noch offen
+    </h2>
+
+    {nextOpenMatch && (
+      <p className="mt-2 text-zinc-400">
+        Nächstes ungetipptes Spiel:{" "}
+        <span className="font-semibold text-white">
+          {nextOpenMatch.home_team} vs. {nextOpenMatch.away_team}
+        </span>
+      </p>
+    )}
+
+    <Link
+      href={`/tippspiele/${firstTippspiel.id}/tippen`}
+      className="mt-5 inline-flex rounded-2xl bg-white px-5 py-3 font-black text-zinc-950 transition hover:bg-zinc-200"
+    >
+      Jetzt tippen
+    </Link>
+  </section>
+)}
 
         <div className="mt-6 flex flex-wrap gap-3">
           <Link
