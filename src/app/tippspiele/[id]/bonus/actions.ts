@@ -74,6 +74,12 @@ export async function saveBonusAnswer(formData: FormData) {
     }
   )
 
+  const lockDate = new Date("2026-06-11T21:00:00+02:00")
+
+if (new Date() >= lockDate) {
+  throw new Error("Bonusfragen sind gesperrt.")
+}
+
   if (error) {
     throw new Error(error.message)
   }

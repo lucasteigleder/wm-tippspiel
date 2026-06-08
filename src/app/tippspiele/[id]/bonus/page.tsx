@@ -29,6 +29,9 @@ export default async function BonusPage({
     BonusRepository.getAnswers(user.id),
   ])
 
+const bonusLocked =
+  new Date() >= new Date("2026-06-11T21:00:00+02:00")
+
   const isAdmin = membership?.role === "admin"
 
   const answerMap = new Map(
@@ -109,15 +112,28 @@ export default async function BonusPage({
                   </span>
                 </div>
 
+{bonusLocked ? (
+  <div className="mb-6 rounded-2xl border border-red-500/30 bg-red-500/10 p-4 text-red-300">
+    🔒 Bonusfragen sind seit dem Anpfiff des Eröffnungsspiels gesperrt.
+  </div>
+) : (
+  <div className="mb-6 rounded-2xl border border-blue-500/30 bg-blue-500/10 p-4 text-blue-300">
+    ⏳ Bonusfragen können bis zum 11.06.2026, 21:00 Uhr abgegeben oder geändert werden.
+  </div>
+)}
+
                 <input
                   name="answer"
                   defaultValue={answerMap.get(question.id) ?? ""}
                   placeholder="Deine Antwort"
+                  disabled={bonusLocked}
                   className="mt-5 w-full rounded-xl border border-zinc-700 bg-zinc-950 px-4 py-3 outline-none focus:border-white"
                   required
                 />
 
-                <button className="mt-4 rounded-xl bg-white px-5 py-2 font-bold text-black transition hover:bg-zinc-200">
+                <button 
+                    disabled={bonusLocked}
+                className="mt-4 rounded-xl bg-white px-5 py-2 font-bold text-black transition hover:bg-zinc-200">
                   Antwort speichern
                 </button>
               </div>
