@@ -84,5 +84,48 @@ if (new Date() >= lockDate) {
     throw new Error(error.message)
   }
 
+
+  
   revalidatePath(`/tippspiele/${tippspielId}/bonus`)
+}
+
+export async function saveCorrectBonusAnswer(formData: FormData) {
+  const tippspielId = formData.get("tippspielId")?.toString()
+  const questionId = formData.get("questionId")?.toString()
+  const correctAnswer = formData.get("correctAnswer")?.toString().trim()
+
+  if (!tippspielId || !questionId || !correctAnswer) {
+    throw new Error("Richtige Antwort fehlt")
+  }
+
+  const supabase = await createSupabaseServerClient()
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  if (!user) {
+    redirect("/login")
+  }
+
+  const membership = await TippspielRepository.getMembership(tippspielId, user.id)
+
+  if (membership?.role !== "admin") {
+    throw new Error("Nur Admins dürfen richtige Antworten setzen")
+  }
+
+  const { error } = await supabase
+    .from("bonus_questions")
+    .update({
+      correct_answer: correctAnswer,
+    })
+    .eq("id", questionId)
+    .eq("tippspiel_id", tippspielId)
+
+  if (error) {
+    throw new Error(error.message)
+  }
+
+  revalidatePath(`/tippspiele/${tippspielId}/bonus`)
+  revalidatePath(`/tippspiele/${tippspielId}/rangliste`)
 }

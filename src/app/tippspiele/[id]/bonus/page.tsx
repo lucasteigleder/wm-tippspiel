@@ -11,7 +11,11 @@ import {
 import { createSupabaseServerClient } from "@/lib/supabase/server"
 import { BonusRepository } from "@/repositories/BonusRepository"
 import { TippspielRepository } from "@/repositories/TippspielRepository"
-import { createBonusQuestion, saveBonusAnswer } from "./actions"
+import {
+  createBonusQuestion,
+  saveBonusAnswer,
+  saveCorrectBonusAnswer,
+} from "./actions"
 import { AppShell } from "@/components/AppShell"
 
 export default async function BonusPage({
@@ -164,6 +168,31 @@ for (const answer of allAnswers) {
                   className="mt-5 w-full rounded-xl border border-zinc-700 bg-zinc-950 px-4 py-3 outline-none focus:border-white"
                   required
                 />
+
+{isAdmin && (
+  <form action={saveCorrectBonusAnswer} className="mt-5 rounded-2xl bg-zinc-950/70 p-4">
+    <input type="hidden" name="tippspielId" value={id} />
+    <input type="hidden" name="questionId" value={question.id} />
+
+    <p className="text-sm font-bold text-zinc-300">
+      Richtige Antwort festlegen
+    </p>
+
+    <div className="mt-3 flex gap-3">
+      <input
+        name="correctAnswer"
+        defaultValue={question.correct_answer ?? ""}
+        placeholder="Richtige Antwort"
+        className="w-full rounded-xl border border-zinc-700 bg-zinc-950 px-4 py-3 outline-none focus:border-white"
+        required
+      />
+
+      <button className="rounded-xl bg-white px-5 py-3 font-bold text-black">
+        Speichern
+      </button>
+    </div>
+  </form>
+)}
 
                 <button 
                     disabled={bonusLocked}
