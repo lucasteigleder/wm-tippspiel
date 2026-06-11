@@ -14,6 +14,7 @@ import { TeamLogo } from "@/components/TeamLogo"
 import { BonusRepository } from "@/repositories/BonusRepository"
 import { BonusPointsService } from "@/services/BonusPointsService"
 import { TippspielRepository } from "@/repositories/TippspielRepository"
+import { Crown } from "lucide-react"
 
 type RanglistePageProps = {
   params: Promise<{
@@ -25,10 +26,7 @@ type LeaderboardEntryWithBonus = LeaderboardEntry & {
   bonusPoints: number
 }
 
-function getPlacement(
-  leaderboard: LeaderboardEntryWithBonus[],
-  index: number
-) {
+function getPlacement(leaderboard: LeaderboardEntryWithBonus[], index: number) {
   if (index === 0) return 1
 
   const current = leaderboard[index]
@@ -46,9 +44,74 @@ function getPlacement(
   return index + 1
 }
 
-export default async function RanglistePage({
-  params,
-}: RanglistePageProps) {
+function getScoreStatus(match: {
+  home_score: number | null
+  away_score: number | null
+  kickoff_at: string
+}) {
+  const hasScore = match.home_score !== null && match.away_score !== null
+  const hasStarted = new Date(match.kickoff_at).getTime() <= Date.now()
+
+  if (!hasScore) {
+    return {
+      label: "offen",
+      className: "bg-zinc-950 text-white",
+    }
+  }
+
+  if (hasStarted) {
+    return {
+      label: `${match.home_score} : ${match.away_score}`,
+      className: "bg-emerald-500/10 text-emerald-400 ring-1 ring-emerald-500/30",
+    }
+  }
+
+  return {
+    label: `${match.home_score} : ${match.away_score}`,
+    className: "bg-zinc-950 text-white",
+  }
+}
+
+function getFinishedScoreStatus(match: {
+  home_score: number | null
+  away_score: number | null
+  status_short?: string | null
+}) {
+  const hasScore = match.home_score !== null && match.away_score !== null
+
+  if (!hasScore) {
+    return {
+      label: "offen",
+      className: "bg-zinc-950 text-white",
+    }
+  }
+
+  const status = match.status_short ?? ""
+
+  const isFinished = ["FT", "AET", "PEN"].includes(status)
+  const isLive = ["1H", "HT", "2H", "ET", "BT", "P"].includes(status)
+
+  if (isFinished) {
+    return {
+      label: `${match.home_score} : ${match.away_score}`,
+      className: "bg-red-500/10 text-red-400 ring-1 ring-red-500/30",
+    }
+  }
+
+  if (isLive) {
+    return {
+      label: `${match.home_score} : ${match.away_score}`,
+      className: "bg-emerald-500/10 text-emerald-400 ring-1 ring-emerald-500/30",
+    }
+  }
+
+  return {
+    label: `${match.home_score} : ${match.away_score}`,
+    className: "bg-emerald-500/10 text-emerald-400 ring-1 ring-emerald-500/30",
+  }
+}
+
+export default async function RanglistePage({ params }: RanglistePageProps) {
   const { id } = await params
   const supabase = await createSupabaseServerClient()
 
@@ -61,22 +124,20 @@ export default async function RanglistePage({
   }
 
   const [matches, predictions, members, bonusQuestions, bonusAnswers] =
-  await Promise.all([
-    MatchRepository.getAll(),
-    PredictionRepository.getByTippspiel(id),
-    TippspielRepository.getMembers(id),
-    BonusRepository.getQuestions(id),
-    BonusRepository.getAllAnswersByTippspiel(id),
-  ])
+    await Promise.all([
+      MatchRepository.getAll(),
+      PredictionRepository.getByTippspiel(id),
+      TippspielRepository.getMembers(id),
+      BonusRepository.getQuestions(id),
+      BonusRepository.getAllAnswersByTippspiel(id),
+    ])
 
   const userNameById = new Map(
-  members.map((member) => [
-    member.user_id,
-    member.profile?.display_name ??
-      member.profile?.username ??
-      "Unbekannt",
-  ])
-)
+    members.map((member) => [
+      member.user_id,
+      member.profile?.display_name ?? member.profile?.username ?? "Unbekannt",
+    ])
+  )
 
   const bonusPointsByUserId = BonusPointsService.calculate(
     bonusQuestions,
@@ -132,24 +193,33 @@ export default async function RanglistePage({
       </section>
 
       <section className="mt-8 grid gap-4 md:grid-cols-3">
-        {leaderboardWithBonus.slice(0, 3).map((entry, index) => (
-          <div
-            key={entry.userId}
-            className="rounded-3xl border border-zinc-800 bg-zinc-900/70 p-6 shadow-xl"
-          >
-            <p className="text-sm text-zinc-400">
-              Platz {getPlacement(leaderboardWithBonus, index)}
-            </p>
+        {leaderboardWithBonus.slice(0, 3).map((entry, index) => {
+          const placement = getPlacement(leaderboardWithBonus, index)
 
-            <h2 className="mt-2 text-2xl font-black">{entry.name}</h2>
+          return (
+            <div
+              key={entry.userId}
+              className="rounded-3xl border border-zinc-800 bg-zinc-900/70 p-6 shadow-xl"
+            >
+              <div className="flex items-center gap-2 text-sm text-zinc-400">
+                {placement === 1 && <Crown className="h-4 w-4 text-yellow-400" />}
+                <span>Platz {placement}</span>
+              </div>
 
-            <p className="mt-4 text-4xl font-black">{entry.points}</p>
+              {placement === 1 && (
+                <Crown className="mt-4 h-9 w-9 text-yellow-400" />
+              )}
 
-            <p className="text-sm text-zinc-400">
-              Punkte · {entry.bonusPoints} Bonus
-            </p>
-          </div>
-        ))}
+              <h2 className="mt-3 text-2xl font-black">{entry.name}</h2>
+
+              <p className="mt-4 text-4xl font-black">{entry.points}</p>
+
+              <p className="text-sm text-zinc-400">
+                Punkte · {entry.bonusPoints} Bonus
+              </p>
+            </div>
+          )
+        })}
       </section>
 
       <div className="mt-8 overflow-hidden rounded-3xl border border-zinc-800 bg-zinc-900/70 shadow-xl">
@@ -170,31 +240,40 @@ export default async function RanglistePage({
           </thead>
 
           <tbody>
-            {leaderboardWithBonus.map((entry, index) => (
-              <tr key={entry.userId} className="border-b border-zinc-800/70">
-                <td className="px-3 py-4 font-bold md:px-4">
-                  {getPlacement(leaderboardWithBonus, index)}
-                </td>
+            {leaderboardWithBonus.map((entry, index) => {
+              const placement = getPlacement(leaderboardWithBonus, index)
 
-                <td className="px-3 py-4 md:px-4">{entry.name}</td>
+              return (
+                <tr key={entry.userId} className="border-b border-zinc-800/70">
+                  <td className="px-3 py-4 font-bold md:px-4">
+                    <div className="flex items-center gap-2">
+                      {placement === 1 && (
+                        <Crown className="h-4 w-4 text-yellow-400" />
+                      )}
+                      <span>{placement}</span>
+                    </div>
+                  </td>
 
-                <td className="px-3 py-4 text-right font-black md:px-4">
-                  {entry.points}
-                </td>
+                  <td className="px-3 py-4 md:px-4">{entry.name}</td>
 
-                <td className="hidden px-4 py-4 text-right sm:table-cell">
-                  {entry.bonusPoints}
-                </td>
+                  <td className="px-3 py-4 text-right font-black md:px-4">
+                    {entry.points}
+                  </td>
 
-                <td className="px-3 py-4 text-right md:px-4">
-                  {entry.exactResults}
-                </td>
+                  <td className="hidden px-4 py-4 text-right sm:table-cell">
+                    {entry.bonusPoints}
+                  </td>
 
-                <td className="hidden px-4 py-4 text-right sm:table-cell">
-                  {entry.correctTendencies}
-                </td>
-              </tr>
-            ))}
+                  <td className="px-3 py-4 text-right md:px-4">
+                    {entry.exactResults}
+                  </td>
+
+                  <td className="hidden px-4 py-4 text-right sm:table-cell">
+                    {entry.correctTendencies}
+                  </td>
+                </tr>
+              )
+            })}
 
             {leaderboardWithBonus.length === 0 && (
               <tr>
@@ -214,64 +293,68 @@ export default async function RanglistePage({
         <h2 className="text-2xl font-black">Punkte aktueller Spieltag</h2>
 
         <div className="mt-5 grid gap-5">
-          {matchPoints.map(({ match, entries }) => (
-            <div
-              key={match.id}
-              className="rounded-3xl border border-zinc-800 bg-zinc-900/70 p-6 shadow-xl"
-            >
-              <p className="text-sm text-zinc-400">
-                {formatMatchDate(match.kickoff_at)}
-              </p>
+          {matchPoints.map(({ match, entries }) => {
+            const scoreStatus = getFinishedScoreStatus(match)
 
-              <div className="mt-4 grid grid-cols-[1fr_auto_1fr] items-center gap-4">
-                <div className="flex items-center gap-3">
-                  <TeamLogo
-                    src={match.home_team_logo}
-                    alt={match.home_team}
-                  />
-                  <span className="font-bold">{match.home_team}</span>
-                </div>
+            return (
+              <div
+                key={match.id}
+                className="rounded-3xl border border-zinc-800 bg-zinc-900/70 p-6 shadow-xl"
+              >
+                <p className="text-sm text-zinc-400">
+                  {formatMatchDate(match.kickoff_at)}
+                </p>
 
-                <span className="rounded-xl bg-zinc-950 px-4 py-2 text-center font-black">
-                  {match.home_score !== null && match.away_score !== null
-                    ? `${match.home_score} : ${match.away_score}`
-                    : "offen"}
-                </span>
-
-                <div className="flex items-center justify-end gap-3 text-right">
-                  <span className="font-bold">{match.away_team}</span>
-                  <TeamLogo
-                    src={match.away_team_logo}
-                    alt={match.away_team}
-                  />
-                </div>
-              </div>
-
-              <div className="mt-5 grid gap-2">
-                {entries.map((entry) => (
-                  <div
-                    key={entry.userId}
-                    className="flex items-center justify-between rounded-2xl bg-zinc-950/70 px-4 py-3 text-sm"
-                  >
-                    <span className="font-semibold">{entry.name}</span>
-
-                    <span className="text-zinc-400">
-                      {entry.predictedHome} : {entry.predictedAway}
-                    </span>
-
-                    <span className="font-black">{entry.points} Pkt.</span>
+                <div className="mt-4 grid grid-cols-[1fr_auto_1fr] items-center gap-4">
+                  <div className="flex items-center gap-3">
+                    <TeamLogo
+                      src={match.home_team_logo}
+                      alt={match.home_team}
+                    />
+                    <span className="font-bold">{match.home_team}</span>
                   </div>
-                ))}
 
-                {entries.length === 0 && (
-                  <p className="rounded-2xl bg-zinc-950/70 px-4 py-4 text-sm text-zinc-400">
-                    Noch kein Tipp vorhanden. Andere Tipps werden erst nach
-                    Anpfiff angezeigt.
-                  </p>
-                )}
+                  <span
+                    className={`rounded-xl px-4 py-2 text-center font-black ${scoreStatus.className}`}
+                  >
+                    {scoreStatus.label}
+                  </span>
+
+                  <div className="flex items-center justify-end gap-3 text-right">
+                    <span className="font-bold">{match.away_team}</span>
+                    <TeamLogo
+                      src={match.away_team_logo}
+                      alt={match.away_team}
+                    />
+                  </div>
+                </div>
+
+                <div className="mt-5 grid gap-2">
+                  {entries.map((entry) => (
+                    <div
+                      key={entry.userId}
+                      className="flex items-center justify-between rounded-2xl bg-zinc-950/70 px-4 py-3 text-sm"
+                    >
+                      <span className="font-semibold">{entry.name}</span>
+
+                      <span className="text-zinc-400">
+                        {entry.predictedHome} : {entry.predictedAway}
+                      </span>
+
+                      <span className="font-black">{entry.points} Pkt.</span>
+                    </div>
+                  ))}
+
+                  {entries.length === 0 && (
+                    <p className="rounded-2xl bg-zinc-950/70 px-4 py-4 text-sm text-zinc-400">
+                      Noch kein Tipp vorhanden. Andere Tipps werden erst nach
+                      Anpfiff angezeigt.
+                    </p>
+                  )}
+                </div>
               </div>
-            </div>
-          ))}
+            )
+          })}
         </div>
       </section>
     </AppShell>
