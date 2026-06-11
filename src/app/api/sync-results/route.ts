@@ -78,3 +78,7 @@ function extractMatchday(round: string): number {
   const match = round.match(/\d+/)
   return match ? Number(match[0]) : 1
 }
+
+export async function GET(request: Request) {
+  return POST(request)
+}
