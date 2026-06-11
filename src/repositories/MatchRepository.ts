@@ -21,7 +21,7 @@ export class MatchRepository {
     ["matches"],
     {
       tags: ["matches"],
-      revalidate: 300,
+      revalidate: 30,
     }
   )
 }
