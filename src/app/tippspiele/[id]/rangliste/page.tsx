@@ -7,13 +7,13 @@ import {
   LeaderboardService,
   LeaderboardEntry,
 } from "@/services/LeaderboardService"
-import { ProfileRepository } from "@/repositories/ProfileRepository"
 import { AppShell } from "@/components/AppShell"
 import { MatchPointsService } from "@/services/MatchPointsService"
 import { formatMatchDate } from "@/utils/date"
 import { TeamLogo } from "@/components/TeamLogo"
 import { BonusRepository } from "@/repositories/BonusRepository"
 import { BonusPointsService } from "@/services/BonusPointsService"
+import { TippspielRepository } from "@/repositories/TippspielRepository"
 
 type RanglistePageProps = {
   params: Promise<{
@@ -60,21 +60,23 @@ export default async function RanglistePage({
     redirect("/login")
   }
 
-  const [matches, predictions, profiles, bonusQuestions, bonusAnswers] =
-    await Promise.all([
-      MatchRepository.getAll(),
-      PredictionRepository.getByTippspiel(id),
-      ProfileRepository.getAll(),
-      BonusRepository.getQuestions(id),
-      BonusRepository.getAllAnswersByTippspiel(id),
-    ])
+  const [matches, predictions, members, bonusQuestions, bonusAnswers] =
+  await Promise.all([
+    MatchRepository.getAll(),
+    PredictionRepository.getByTippspiel(id),
+    TippspielRepository.getMembers(id),
+    BonusRepository.getQuestions(id),
+    BonusRepository.getAllAnswersByTippspiel(id),
+  ])
 
   const userNameById = new Map(
-    profiles.map((profile) => [
-      profile.id,
-      profile.display_name ?? profile.username,
-    ])
-  )
+  members.map((member) => [
+    member.user_id,
+    member.profile?.display_name ??
+      member.profile?.username ??
+      "Unbekannt",
+  ])
+)
 
   const bonusPointsByUserId = BonusPointsService.calculate(
     bonusQuestions,
