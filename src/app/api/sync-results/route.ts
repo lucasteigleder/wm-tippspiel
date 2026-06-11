@@ -30,35 +30,36 @@ export async function POST(request: Request) {
   const errors: string[] = []
 
   for (const fixture of fixtures) {
-    const { error } = await supabase.from("matches").upsert(
-      {
-        external_api_id: fixture.fixture.id,
-        matchday: extractMatchday(fixture.league.round),
-        stage: fixture.league.round,
+  const { error } = await supabase.from("matches").upsert(
+    {
+      external_api_id: fixture.fixture.id,
+      matchday: extractMatchday(fixture.league.round),
+      stage: fixture.league.round,
 
-        home_team_id: fixture.teams.home.id,
-        home_team: fixture.teams.home.name,
-        home_team_logo: fixture.teams.home.logo,
+      home_team_id: fixture.teams.home.id,
+      home_team: fixture.teams.home.name,
+      home_team_logo: fixture.teams.home.logo,
 
-        away_team_id: fixture.teams.away.id,
-        away_team: fixture.teams.away.name,
-        away_team_logo: fixture.teams.away.logo,
+      away_team_id: fixture.teams.away.id,
+      away_team: fixture.teams.away.name,
+      away_team_logo: fixture.teams.away.logo,
 
-        kickoff_at: fixture.fixture.date,
-        home_score: fixture.goals.home,
-        away_score: fixture.goals.away,
-      },
-      {
-        onConflict: "external_api_id",
-      }
-    )
-
-    if (error) {
-      errors.push(error.message)
-    } else {
-      updated++
+      kickoff_at: fixture.fixture.date,
+      home_score: fixture.goals.home,
+      away_score: fixture.goals.away,
+      status_short: fixture.fixture.status.short,
+    },
+    {
+      onConflict: "external_api_id",
     }
+  )
+
+  if (error) {
+    errors.push(error.message)
+  } else {
+    updated++
   }
+}
 
   // revalidate the "matches" tag for the current path
   const url = new URL(request.url)
