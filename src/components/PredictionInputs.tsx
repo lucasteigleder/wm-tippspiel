@@ -65,7 +65,7 @@ export function PredictionInputs({
         )}
       </div>
 
-      <div className="mt-6 grid grid-cols-[1fr_56px_1fr] items-start gap-3">
+      <div className="mt-6 grid grid-cols-[1fr_auto_1fr] items-start gap-3 sm:gap-6">
         <div className="flex min-w-0 flex-col items-center gap-3 text-center">
           <TeamBlock logo={match.home_team_logo} name={match.home_team} />
 
@@ -80,9 +80,9 @@ export function PredictionInputs({
         </div>
 
         <div className="flex flex-col items-center pt-10">
-          <div className="rounded-2xl bg-zinc-950 px-4 py-3 text-center text-base font-black">
-            {hasResult ? `${match.home_score} : ${match.away_score}` : "vs"}
-          </div>
+          <div className="flex h-14 min-w-16 items-center justify-center rounded-2xl bg-zinc-950 px-4 text-center text-lg font-black sm:h-auto sm:min-w-20 sm:py-3">
+  {hasResult ? `${match.home_score} : ${match.away_score}` : "vs"}
+</div>
         </div>
 
         <div className="flex min-w-0 flex-col items-center gap-3 text-center">

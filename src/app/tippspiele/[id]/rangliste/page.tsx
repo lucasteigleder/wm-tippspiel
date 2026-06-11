@@ -305,23 +305,27 @@ export default async function RanglistePage({ params }: RanglistePageProps) {
                   {formatMatchDate(match.kickoff_at)}
                 </p>
 
-                <div className="mt-4 grid grid-cols-[1fr_auto_1fr] items-center gap-4">
-                  <div className="flex items-center gap-3">
+                <div className="mt-4 grid grid-cols-[1fr_auto_1fr] items-center gap-2 sm:gap-4">
+                  <div className="flex min-w-0 items-center gap-2 sm:gap-3">
                     <TeamLogo
                       src={match.home_team_logo}
                       alt={match.home_team}
                     />
-                    <span className="font-bold">{match.home_team}</span>
+                    <span className="min-w-0 break-words text-sm font-bold leading-tight sm:text-base">
+  {match.home_team}
+</span>
                   </div>
 
                   <span
-                    className={`rounded-xl px-4 py-2 text-center font-black ${scoreStatus.className}`}
-                  >
-                    {scoreStatus.label}
-                  </span>
+  className={`flex min-h-11 min-w-16 items-center justify-center rounded-2xl px-3 py-2 text-center text-base font-black sm:min-w-20 sm:px-4 ${scoreStatus.className}`}
+>
+  {scoreStatus.label}
+</span>
 
-                  <div className="flex items-center justify-end gap-3 text-right">
-                    <span className="font-bold">{match.away_team}</span>
+                  <div className="flex min-w-0 items-center justify-end gap-2 text-right sm:gap-3">
+                    <span className="min-w-0 break-words text-sm font-bold leading-tight sm:text-base">
+  {match.away_team}
+</span>
                     <TeamLogo
                       src={match.away_team_logo}
                       alt={match.away_team}
@@ -333,7 +337,7 @@ export default async function RanglistePage({ params }: RanglistePageProps) {
                   {entries.map((entry) => (
                     <div
                       key={entry.userId}
-                      className="flex items-center justify-between rounded-2xl bg-zinc-950/70 px-4 py-3 text-sm"
+                      className="grid grid-cols-[1fr_auto_auto] items-center gap-3 rounded-2xl bg-zinc-950/70 px-4 py-3 text-sm"
                     >
                       <span className="font-semibold">{entry.name}</span>
 
