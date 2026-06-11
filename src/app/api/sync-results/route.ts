@@ -62,8 +62,7 @@ export async function POST(request: Request) {
 }
 
   // revalidate the "matches" tag for the current path
-  const url = new URL(request.url)
-  revalidateTag("matches", url.pathname)
+  revalidateTag("matches", "max")
 
   return NextResponse.json({
     success: errors.length === 0,
