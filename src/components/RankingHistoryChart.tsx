@@ -135,18 +135,26 @@ export function RankingHistoryChart({ history }: RankingHistoryChartProps) {
               )}
 
               {playerPoints.map((point, index) => (
-                <circle
-                  key={index}
-                  cx={point.x}
-                  cy={point.y}
-                  r="6"
-                  fill={color}
-                >
-                  <title>
-                    {name} · Platz {point.placement}
-                  </title>
-                </circle>
-              ))}
+  <g key={index}>
+    <circle cx={point.x} cy={point.y} r="6" fill={color}>
+      <title>
+        {name} · Platz {point.placement}
+      </title>
+    </circle>
+
+    {index === 0 && (
+      <text
+        x={point.x + 14}
+        y={point.y + 5}
+        fill="rgba(255,255,255,0.85)"
+        fontSize="14"
+        fontWeight="700"
+      >
+        {name}
+      </text>
+    )}
+  </g>
+))}
             </g>
           )
         })}
