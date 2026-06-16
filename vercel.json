@@ -3,6 +3,10 @@
         {
             "path": "/api/sync-results",
             "schedule": "*/5 * * * *"
+        },
+        {
+            "path":"/api/sync-standings",
+            "schedule": "*/5 * * * *"
         }
     ]
 }

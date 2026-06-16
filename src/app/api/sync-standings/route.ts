@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server"
 import { createSupabaseAdminClient } from "@/lib/supabase/admin"
 import { FootballApiService } from "@/services/FootballApiService"
+import { revalidateTag } from "next/cache"
 
 export async function POST(request: Request) {
   const secret = request.headers.get("x-sync-secret")
@@ -57,11 +58,17 @@ export async function POST(request: Request) {
     }
   }
 
+  revalidateTag("group-standings", "max")
+
   return NextResponse.json({
     success: errors.length === 0,
     groups: standingsGroups.length,
     updated,
     errors,
     sample: standingsGroups[0]?.[0] ?? null,
-  })
+  })  
+}
+
+export async function GET(request: Request) {
+  return POST(request)
 }
