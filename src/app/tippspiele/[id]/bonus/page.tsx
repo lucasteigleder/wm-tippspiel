@@ -242,22 +242,44 @@ export default async function BonusPage({
                       </p>
 
                       <div className="mt-3 space-y-2">
-                        {questionAnswers.map((answer) => {
-                          const name =
-                            userNameById.get(answer.user_id) ?? "Unbekannt"
+                        {question.correct_answer && (
+  <p className="mt-3 text-sm font-bold text-emerald-400">
+    Richtige Antwort: {question.correct_answer}
+  </p>
+)}
 
-                          return (
-                            <div
-                              key={answer.id}
-                              className="flex items-center justify-between gap-3 rounded-xl bg-zinc-900 px-3 py-2 text-sm"
-                            >
-                              <span className="font-semibold">{name}</span>
-                              <span className="text-zinc-300">
-                                {answer.answer}
-                              </span>
-                            </div>
-                          )
-                        })}
+{questionAnswers.map((answer) => {
+  const name = userNameById.get(answer.user_id) ?? "Unbekannt"
+
+  const hasCorrectAnswer = !!question.correct_answer
+
+  const isCorrect =
+    hasCorrectAnswer &&
+    answer.answer.trim().toLowerCase() ===
+      question.correct_answer.trim().toLowerCase()
+
+  return (
+    <div
+      key={answer.id}
+      className={`flex items-center justify-between gap-3 rounded-xl px-3 py-2 text-sm ${
+        !hasCorrectAnswer
+          ? "bg-zinc-900"
+          : isCorrect
+            ? "bg-emerald-500/10 text-emerald-300 ring-1 ring-emerald-500/30"
+            : "bg-red-500/10 text-red-300 ring-1 ring-red-500/30"
+      }`}
+    >
+      <span className="font-semibold">{name}</span>
+
+      <span className="font-medium">
+        {answer.answer}
+        {hasCorrectAnswer && (
+          <span className="ml-2">{isCorrect ? "✅" : "❌"}</span>
+        )}
+      </span>
+    </div>
+  )
+})}
 
                         {questionAnswers.length === 0 && (
                           <p className="text-sm text-zinc-500">
