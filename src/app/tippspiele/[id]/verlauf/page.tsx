@@ -7,6 +7,7 @@ import { PredictionRepository } from "@/repositories/PredictionRepository"
 import { TippspielRepository } from "@/repositories/TippspielRepository"
 import { RankingHistoryService } from "@/services/RankingHistoryService"
 import { formatStageName } from "@/utils/stage"
+import { RankingHistoryChart } from "@/components/RankingHistoryChart"
 
 type VerlaufPageProps = {
   params: Promise<{
@@ -66,43 +67,15 @@ export default async function VerlaufPage({ params }: VerlaufPageProps) {
         </p>
       </section>
 
-      <section className="mt-8 grid gap-5">
-        {history.map((row) => (
-          <div
-            key={row.stage}
-            className="rounded-3xl border border-zinc-800 bg-zinc-900/70 p-6 shadow-xl"
-          >
-            <h2 className="text-2xl font-black">
-              {formatStageName(row.stage)}
-            </h2>
-
-            <div className="mt-5 grid gap-2">
-              {row.rankings.map((ranking) => (
-                <div
-                  key={ranking.userId}
-                  className="flex items-center justify-between rounded-2xl bg-zinc-950/70 px-4 py-3"
-                >
-                  <div className="flex items-center gap-3">
-                    <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-white font-black text-zinc-950">
-                      {ranking.placement}
-                    </span>
-
-                    <span className="font-bold">{ranking.name}</span>
-                  </div>
-
-                  <span className="font-black">{ranking.points} Pkt.</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        ))}
-
-        {history.length === 0 && (
-          <div className="rounded-3xl border border-dashed border-zinc-700 bg-zinc-900/40 p-8 text-center text-zinc-400">
-            Noch keine abgeschlossenen Spiele vorhanden.
-          </div>
-        )}
-      </section>
+      <section className="mt-8">
+  {history.length > 0 ? (
+    <RankingHistoryChart history={history} />
+  ) : (
+    <div className="rounded-3xl border border-dashed border-zinc-700 bg-zinc-900/40 p-8 text-center text-zinc-400">
+      Noch keine abgeschlossenen Spiele vorhanden.
+    </div>
+  )}
+</section>
     </AppShell>
   )
 }
