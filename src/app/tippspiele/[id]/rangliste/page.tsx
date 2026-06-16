@@ -177,6 +177,27 @@ export default async function RanglistePage({ params }: RanglistePageProps) {
     userNameById,
     user.id
   )
+  const visibleMatchPoints = matchPoints
+  .map((item) => ({
+    ...item,
+    kickoffTime: new Date(item.match.kickoff_at).getTime(),
+  }))
+  .sort((a, b) => a.kickoffTime - b.kickoffTime)
+
+const now = Date.now()
+
+const lastFinishedMatches = visibleMatchPoints
+  .filter((item) => item.kickoffTime <= now)
+  .slice(-3)
+
+const nextMatches = visibleMatchPoints
+  .filter((item) => item.kickoffTime > now)
+  .slice(0, 2)
+
+const limitedMatchPoints = [
+  ...lastFinishedMatches,
+  ...nextMatches,
+]
 
   return (
     <AppShell tippspielId={id} tippspielName="WM 2026 Tippspiel">
@@ -290,10 +311,10 @@ export default async function RanglistePage({ params }: RanglistePageProps) {
       </div>
 
       <section className="mt-10">
-        <h2 className="text-2xl font-black">Punkte aktueller Spieltag</h2>
+        <h2 className="text-2xl font-black">Letzte & nächste Spiele</h2>
 
         <div className="mt-5 grid gap-5">
-          {matchPoints.map(({ match, entries }) => {
+          {limitedMatchPoints.map(({ match, entries }) => {
             const scoreStatus = getFinishedScoreStatus(match)
 
             return (
