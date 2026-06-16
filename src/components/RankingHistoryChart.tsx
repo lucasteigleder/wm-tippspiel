@@ -36,14 +36,10 @@ export function RankingHistoryChart({ history }: RankingHistoryChartProps) {
   const padding = 48
 
   const xStep =
-    history.length > 1
-      ? (width - padding * 2) / (history.length - 1)
-      : 0
+    history.length > 1 ? (width - padding * 2) / (history.length - 1) : 0
 
   const yStep =
-    maxPlacement > 1
-      ? (height - padding * 2) / (maxPlacement - 1)
-      : 0
+    maxPlacement > 1 ? (height - padding * 2) / (maxPlacement - 1) : 0
 
   function getX(index: number) {
     return padding + index * xStep
@@ -55,10 +51,7 @@ export function RankingHistoryChart({ history }: RankingHistoryChartProps) {
 
   return (
     <div className="overflow-x-auto rounded-3xl border border-zinc-800 bg-zinc-900/70 p-4 shadow-xl">
-      <svg
-        viewBox={`0 0 ${width} ${height}`}
-        className="min-w-[900px]"
-      >
+      <svg viewBox={`0 0 ${width} ${height}`} className="min-w-[900px]">
         {Array.from({ length: maxPlacement }).map((_, index) => (
           <g key={index}>
             <line
@@ -102,7 +95,9 @@ export function RankingHistoryChart({ history }: RankingHistoryChartProps) {
         ))}
 
         {players.map(([userId, name], playerIndex) => {
-          const points = history
+          const color = colors[playerIndex % colors.length]
+
+          const playerPoints = history
             .map((row, index) => {
               const ranking = row.rankings.find(
                 (item) => item.userId === userId
@@ -110,23 +105,49 @@ export function RankingHistoryChart({ history }: RankingHistoryChartProps) {
 
               if (!ranking) return null
 
-              return `${getX(index)},${getY(ranking.placement)}`
+              return {
+                x: getX(index),
+                y: getY(ranking.placement),
+                placement: ranking.placement,
+              }
             })
-            .filter(Boolean)
+            .filter(Boolean) as {
+            x: number
+            y: number
+            placement: number
+          }[]
+
+          const points = playerPoints
+            .map((point) => `${point.x},${point.y}`)
             .join(" ")
 
           return (
-            <polyline
-              key={userId}
-              points={points}
-              fill="none"
-              stroke={colors[playerIndex % colors.length]}
-              strokeWidth="4"
-              strokeLinejoin="round"
-              strokeLinecap="round"
-            >
-              <title>{name}</title>
-            </polyline>
+            <g key={userId}>
+              {playerPoints.length > 1 && (
+                <polyline
+                  points={points}
+                  fill="none"
+                  stroke={color}
+                  strokeWidth="4"
+                  strokeLinejoin="round"
+                  strokeLinecap="round"
+                />
+              )}
+
+              {playerPoints.map((point, index) => (
+                <circle
+                  key={index}
+                  cx={point.x}
+                  cy={point.y}
+                  r="6"
+                  fill={color}
+                >
+                  <title>
+                    {name} · Platz {point.placement}
+                  </title>
+                </circle>
+              ))}
+            </g>
           )
         })}
       </svg>
