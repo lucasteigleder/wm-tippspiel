@@ -4,7 +4,7 @@ import { AppShell } from "@/components/AppShell"
 import { createSupabaseServerClient } from "@/lib/supabase/server"
 import { MatchRepository } from "@/repositories/MatchRepository"
 import { PredictionRepository } from "@/repositories/PredictionRepository"
-import { ProfileRepository } from "@/repositories/ProfileRepository"
+import { TippspielRepository } from "@/repositories/TippspielRepository"
 import { RankingHistoryService } from "@/services/RankingHistoryService"
 import { formatStageName } from "@/utils/stage"
 
@@ -26,16 +26,18 @@ export default async function VerlaufPage({ params }: VerlaufPageProps) {
     redirect("/login")
   }
 
-  const [matches, predictions, profiles] = await Promise.all([
+  const [matches, predictions, members] = await Promise.all([
     MatchRepository.getAll(),
     PredictionRepository.getByTippspiel(id),
-    ProfileRepository.getAll(),
+    TippspielRepository.getMembers(id),
   ])
 
   const userNameById = new Map(
-    profiles.map((profile) => [
-      profile.id,
-      profile.display_name ?? profile.username,
+    members.map((member) => [
+      member.user_id,
+      member.profile?.display_name ??
+        member.profile?.username ??
+        "Unbekannt",
     ])
   )
 
