@@ -28,35 +28,42 @@ export async function POST(request: Request) {
   const errors: string[] = []
 
   for (const group of standingsGroups) {
-    const groupName = group[0]?.group ?? "Unbekannte Gruppe"
+  const groupName = group[0]?.group ?? "Unbekannte Gruppe"
 
-    for (const standing of group) {
-      const { error } = await supabase.from("group_standings").upsert(
-        {
-          league_id: leagueId,
-          season,
-          group_name: groupName,
-          rank: standing.rank,
-          team_id: standing.team.id,
-          team_name: standing.team.name,
-          team_logo: standing.team.logo,
-          played: standing.all.played,
-          goals_diff: standing.goalsDiff,
-          points: standing.points,
-          updated_at: new Date().toISOString(),
-        },
-        {
-          onConflict: "league_id,season,group_name,team_id",
-        }
-      )
+  const isRealGroup = /^Group [A-L]$/.test(groupName)
+  const isThirdPlacedRanking = groupName === "Ranking of third-placed teams"
 
-      if (error) {
-        errors.push(error.message)
-      } else {
-        updated++
+  if (!isRealGroup && !isThirdPlacedRanking) {
+    continue
+  }
+
+  for (const standing of group) {
+    const { error } = await supabase.from("group_standings").upsert(
+      {
+        league_id: leagueId,
+        season,
+        group_name: groupName,
+        rank: standing.rank,
+        team_id: standing.team.id,
+        team_name: standing.team.name,
+        team_logo: standing.team.logo,
+        played: standing.all.played,
+        goals_diff: standing.goalsDiff,
+        points: standing.points,
+        updated_at: new Date().toISOString(),
+      },
+      {
+        onConflict: "league_id,season,group_name,team_id",
       }
+    )
+
+    if (error) {
+      errors.push(error.message)
+    } else {
+      updated++
     }
   }
+}
 
   revalidateTag("group-standings", "max")
 
