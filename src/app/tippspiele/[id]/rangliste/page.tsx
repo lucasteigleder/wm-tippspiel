@@ -362,9 +362,17 @@ const limitedMatchPoints = [
                     >
                       <span className="font-semibold">{entry.name}</span>
 
-                      <span className="text-zinc-400">
-                        {entry.predictedHome} : {entry.predictedAway}
-                      </span>
+                      <span
+  className={`rounded-lg px-3 py-1 font-bold ${
+    entry.points >= 4
+      ? "bg-emerald-500/10 text-emerald-400 ring-1 ring-emerald-500/30"
+      : entry.points > 0
+        ? "bg-yellow-500/10 text-yellow-400 ring-1 ring-yellow-500/30"
+        : "bg-red-500/10 text-red-400 ring-1 ring-red-500/30"
+  }`}
+>
+  {entry.predictedHome} : {entry.predictedAway}
+</span>
 
                       <span className="font-black">{entry.points} Pkt.</span>
                     </div>
