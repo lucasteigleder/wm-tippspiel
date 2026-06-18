@@ -36,12 +36,25 @@ export async function POST(request: Request) {
   for (const group of standingsGroups) {
   const groupName = group[0]?.group ?? "Unbekannte Gruppe"
 
-  const isRealGroup = /^Group [A-L]$/.test(groupName)
-  const isThirdPlacedRanking = groupName === "Ranking of third-placed teams"
+  const allowedGroups = [
+  "Group Stage",
+  "Group A",
+  "Group B",
+  "Group C",
+  "Group D",
+  "Group E",
+  "Group F",
+  "Group G",
+  "Group H",
+  "Group I",
+  "Group J",
+  "Group K",
+  "Group L",
+]
 
-  if (!isRealGroup && !isThirdPlacedRanking) {
-    continue
-  }
+if (!allowedGroups.includes(groupName)) {
+  continue
+}
 
   for (const standing of group) {
     const { error } = await supabase.from("group_standings").upsert(
