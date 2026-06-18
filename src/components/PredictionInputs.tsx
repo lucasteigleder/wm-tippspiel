@@ -3,28 +3,35 @@ import { Prediction } from "@/models/Prediction"
 import { TeamLogo } from "@/components/TeamLogo"
 import { formatMatchDate } from "@/utils/date"
 import { getCountdownText } from "@/utils/matchStatus"
+import Link  from "next/link"
 
 type PredictionInputsProps = {
   match: Match
   prediction?: Prediction
   isNextMatch?: boolean
+  tippspielId: string
 }
 
 function TeamBlock({
   logo,
   name,
+  href,
 }: {
   logo: string | null
   name: string
+  href: string
 }) {
   return (
-    <div className="flex min-w-0 flex-col items-center gap-2">
+    <Link
+      href={href}
+      className="flex min-w-0 flex-col items-center gap-2 transition hover:scale-105"
+    >
       <TeamLogo src={logo} alt={name} />
 
       <span className="max-w-full break-words text-center text-sm font-black leading-tight sm:text-lg">
         {name}
       </span>
-    </div>
+    </Link>
   )
 }
 
@@ -32,6 +39,7 @@ export function PredictionInputs({
   match,
   prediction,
   isNextMatch = false,
+  tippspielId,
 }: PredictionInputsProps) {
   const isPlaceholder = match.is_placeholder
   const isLocked =
@@ -67,7 +75,11 @@ export function PredictionInputs({
 
       <div className="mt-6 grid grid-cols-[1fr_auto_1fr] items-start gap-3 sm:gap-6">
         <div className="flex min-w-0 flex-col items-center gap-3 text-center">
-          <TeamBlock logo={match.home_team_logo} name={match.home_team} />
+          <TeamBlock
+  logo={match.away_team_logo}
+  name={match.away_team}
+  href={`/tippspiele/${tippspielId}/teams/${match.away_team_id}`}
+/>
 
           <input
             name={`homeScore-${match.id}`}
@@ -86,7 +98,11 @@ export function PredictionInputs({
         </div>
 
         <div className="flex min-w-0 flex-col items-center gap-3 text-center">
-          <TeamBlock logo={match.away_team_logo} name={match.away_team} />
+          <TeamBlock
+  logo={match.home_team_logo}
+  name={match.home_team}
+  href={`/tippspiele/${tippspielId}/teams/${match.home_team_id}`}
+/>
 
           <input
             name={`awayScore-${match.id}`}

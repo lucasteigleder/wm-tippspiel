@@ -69,6 +69,7 @@ export default async function TippenPage({ params }: TippenPageProps) {
         match={match}
         prediction={predictionByMatchId.get(match.id)}
         isNextMatch={nextMatch?.id === match.id}
+        tippspielId={id}
       />
     ))}
   </div>
