@@ -24,6 +24,12 @@ export async function POST(request: Request) {
   const supabase = createSupabaseAdminClient()
   const standingsGroups = await FootballApiService.getWorldCupStandings()
 
+  await supabase
+    .from("group_standings")
+    .delete()
+    .eq("league_id", leagueId)
+    .eq("season", season)
+
   let updated = 0
   const errors: string[] = []
 
