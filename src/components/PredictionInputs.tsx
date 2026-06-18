@@ -76,9 +76,9 @@ export function PredictionInputs({
       <div className="mt-6 grid grid-cols-[1fr_auto_1fr] items-start gap-3 sm:gap-6">
         <div className="flex min-w-0 flex-col items-center gap-3 text-center">
           <TeamBlock
-  logo={match.away_team_logo}
-  name={match.away_team}
-  href={`/tippspiele/${tippspielId}/teams/${match.away_team_id}`}
+  logo={match.home_team_logo}
+  name={match.home_team}
+  href={`/tippspiele/${tippspielId}/teams/${match.home_team_id}`}
 />
 
           <input
@@ -99,9 +99,9 @@ export function PredictionInputs({
 
         <div className="flex min-w-0 flex-col items-center gap-3 text-center">
           <TeamBlock
-  logo={match.home_team_logo}
-  name={match.home_team}
-  href={`/tippspiele/${tippspielId}/teams/${match.home_team_id}`}
+  logo={match.away_team_logo}
+  name={match.away_team}
+  href={`/tippspiele/${tippspielId}/teams/${match.away_team_id}`}
 />
 
           <input
