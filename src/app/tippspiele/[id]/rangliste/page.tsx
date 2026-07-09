@@ -177,26 +177,27 @@ export default async function RanglistePage({ params }: RanglistePageProps) {
     userNameById,
     user.id
   )
-  const visibleMatchPoints = matchPoints
+  const sortedMatchPoints = matchPoints
   .map((item) => ({
     ...item,
     kickoffTime: new Date(item.match.kickoff_at).getTime(),
+    hasResult:
+      item.match.home_score !== null &&
+      item.match.away_score !== null,
   }))
   .sort((a, b) => a.kickoffTime - b.kickoffTime)
 
-const now = Date.now()
-
-const lastFinishedMatches = visibleMatchPoints
-  .filter((item) => item.kickoffTime <= now)
+const lastFinishedMatches = sortedMatchPoints
+  .filter((item) => item.hasResult)
   .slice(-3)
 
-const nextMatches = visibleMatchPoints
-  .filter((item) => item.kickoffTime > now)
+const nextOpenMatches = sortedMatchPoints
+  .filter((item) => !item.hasResult)
   .slice(0, 2)
 
 const limitedMatchPoints = [
   ...lastFinishedMatches,
-  ...nextMatches,
+  ...nextOpenMatches,
 ]
 
   return (
