@@ -22,14 +22,11 @@ export class MatchPointsService {
   userNameById: Map<string, string>,
   currentUserId: string
 ): MatchPoints[] {
-  const currentMatchday = getCurrentMatchday(matches)
-  const currentMatches = matches
-  .filter((match) => match.matchday === currentMatchday)
-  .sort(
-    (a, b) =>
-      new Date(a.kickoff_at).getTime() -
-      new Date(b.kickoff_at).getTime()
-  )
+  const currentMatches = [...matches].sort(
+  (a, b) =>
+    new Date(a.kickoff_at).getTime() -
+    new Date(b.kickoff_at).getTime()
+)
 
   return currentMatches.map((match) => {
     const isStarted = new Date(match.kickoff_at).getTime() <= Date.now()
